@@ -2,6 +2,8 @@
 
 command_doctor() {
 
-info "Doctor module is not implemented."
+    source "${LAB_ROOT}/lib/services/doctor.sh"
+
+    doctor_service
 
 }
