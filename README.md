@@ -56,3 +56,12 @@ Google AOSP 不是资产。
 - Research
 - Knowledge
 - Automation
+
+
+# Quick Start
+
+./bin/lab.sh
+
+./bin/lab.sh help
+
+./bin/lab.sh version
