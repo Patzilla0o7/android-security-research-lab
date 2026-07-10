@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+LAB_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+export LAB_ROOT
+
+source "${LAB_ROOT}/lib/core/init.sh"
+
+source "${LAB_ROOT}/lib/commands/help.sh"
+source "${LAB_ROOT}/lib/commands/version.sh"
+
+COMMAND="${1:-help}"
+
+case "${COMMAND}" in
+
+help)
+
+    show_help
+;;
+
+version)
+
+    show_version
+;;
+
+doctor)
+
+    info "Not implemented."
+
+;;
+
+bootstrap)
+
+    info "Not implemented."
+
+;;
+
+workspace)
+
+    info "Not implemented."
+
+;;
+
+repo)
+
+    info "Not implemented."
+
+;;
+
+build)
+
+    info "Not implemented."
+
+;;
+
+research)
+
+    info "Not implemented."
+
+;;
+
+*)
+
+    error "Unknown command: ${COMMAND}"
+
+    echo
+
+    show_help
+
+    exit 1
+
+;;
+
+esac

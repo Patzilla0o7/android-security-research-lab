@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+# ============================================================
+# Android Security Research Lab
+# Logger Library
+# ============================================================
+
+readonly COLOR_RESET="\033[0m"
+readonly COLOR_RED="\033[31m"
+readonly COLOR_GREEN="\033[32m"
+readonly COLOR_YELLOW="\033[33m"
+readonly COLOR_BLUE="\033[34m"
+
+info() {
+    printf "${COLOR_BLUE}[INFO]${COLOR_RESET} %s\n" "$*"
+}
+
+success() {
+    printf "${COLOR_GREEN}[ OK ]${COLOR_RESET} %s\n" "$*"
+}
+
+warn() {
+    printf "${COLOR_YELLOW}[WARN]${COLOR_RESET} %s\n" "$*"
+}
+
+error() {
+    printf "${COLOR_RED}[FAIL]${COLOR_RESET} %s\n" "$*" >&2
+}
