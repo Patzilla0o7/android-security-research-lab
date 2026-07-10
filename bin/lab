@@ -8,69 +8,28 @@ export LAB_ROOT
 
 source "${LAB_ROOT}/lib/core/init.sh"
 
-source "${LAB_ROOT}/lib/commands/help.sh"
-source "${LAB_ROOT}/lib/commands/version.sh"
-
 COMMAND="${1:-help}"
 
-case "${COMMAND}" in
+COMMAND_FILE="${LAB_ROOT}/lib/commands/${COMMAND}.sh"
 
-help)
-
-    show_help
-;;
-
-version)
-
-    show_version
-;;
-
-doctor)
-
-    info "Not implemented."
-
-;;
-
-bootstrap)
-
-    info "Not implemented."
-
-;;
-
-workspace)
-
-    info "Not implemented."
-
-;;
-
-repo)
-
-    info "Not implemented."
-
-;;
-
-build)
-
-    info "Not implemented."
-
-;;
-
-research)
-
-    info "Not implemented."
-
-;;
-
-*)
+if [[ ! -f "${COMMAND_FILE}" ]]; then
 
     error "Unknown command: ${COMMAND}"
 
     echo
 
-    show_help
+    source "${LAB_ROOT}/lib/commands/help.sh"
+
+    command_help
 
     exit 1
 
-;;
+fi
 
-esac
+source "${COMMAND_FILE}"
+
+FUNCTION="command_${COMMAND}"
+
+shift || true
+
+"${FUNCTION}" "$@"

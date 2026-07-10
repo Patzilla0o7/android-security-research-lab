@@ -1,32 +1,32 @@
 #!/usr/bin/env bash
 
-show_help() {
+command_help() {
 
 cat <<EOF
 
 Android Security Research Lab
 
-Usage:
+Usage
 
     lab <command>
 
 Commands
 
-    help            Show help
+    help
 
-    version         Show version
+    version
 
-    doctor          Environment diagnosis
+    doctor
 
-    bootstrap       Initialize Ubuntu
+    bootstrap
 
-    workspace       Workspace management
+    workspace
 
-    repo            Repo management
+    repo
 
-    build           Android build
+    build
 
-    research        Research management
+    research
 
 EOF
 

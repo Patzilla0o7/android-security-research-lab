@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-show_version() {
+command_version() {
 
 local version="Unknown"
 
