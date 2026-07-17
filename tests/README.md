@@ -22,4 +22,4 @@ Automation
 ./tests/run.sh
 ```
 
-当前测试覆盖统一配置模板加载、必填配置校验和 Bootstrap 参数解析。测试不依赖 AOSP 工作区。
+当前测试覆盖统一配置模板加载、必填配置校验、工具清单解析和 Bootstrap 参数解析。测试不依赖 AOSP 工作区。

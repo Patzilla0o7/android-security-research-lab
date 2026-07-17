@@ -12,6 +12,7 @@ doctor_initialize() {
 
     config_load
     [[ -f "${DOCTOR_CONFIG}" ]] && source "${DOCTOR_CONFIG}"
+    toolchain_load
 }
 
 record_pass() {
@@ -94,50 +95,25 @@ doctor_check_lab_config() {
     fi
 }
 
-doctor_check_git() {
-    if command -v git >/dev/null; then
-        record_pass "Git" "$(git --version | awk '{print $3}')"
-    else
-        record_fail "Git" "Not Installed"
-    fi
-}
+doctor_check_toolchain() {
+    local index label level status detail
 
-doctor_check_python() {
-    if command -v python3 >/dev/null; then
-        record_pass "Python3" "$(python3 --version | awk '{print $2}')"
-    else
-        record_fail "Python3" "Not Installed"
-    fi
-}
+    toolchain_collect
 
-doctor_check_java() {
-    if command -v java >/dev/null; then
-        local v
-        v=$(java -version 2>&1 | head -1 | sed -E 's/.*"?([0-9]+).*/\1/')
-        if [ "${v}" -ge "${REQUIRED_JAVA_MAJOR}" ] 2>/dev/null; then
-            record_pass "Java" "${v}"
+    for (( index = 0; index < ${#TOOL_IDS[@]}; index++ )); do
+        label="${TOOL_LABELS[index]}"
+        level="${TOOL_LEVELS[index]}"
+        status="${TOOL_STATUSES[index]}"
+        detail="${TOOL_DETAILS[index]}"
+
+        if [[ "${status}" == "installed" ]]; then
+            record_pass "${label}" "${detail}"
+        elif [[ "${level}" == "required" ]]; then
+            record_fail "${label}" "${detail}"
         else
-            record_warn "Java" "${v}"
+            record_warn "${label}" "${detail}"
         fi
-    else
-        record_fail "Java" "Not Installed"
-    fi
-}
-
-doctor_check_repo() {
-    if command -v repo >/dev/null; then
-        record_pass "Repo" "Installed"
-    else
-        record_warn "Repo" "Not Installed"
-    fi
-}
-
-doctor_check_ccache() {
-    if command -v ccache >/dev/null; then
-        record_pass "ccache" "Installed"
-    else
-        record_warn "ccache" "Recommended"
-    fi
+    done
 }
 
 doctor_check_git_identity() {
@@ -161,11 +137,7 @@ doctor_execute() {
     doctor_check_disk
     doctor_check_lab_config
 
-    doctor_check_git
-    doctor_check_python
-    doctor_check_java
-    doctor_check_repo
-    doctor_check_ccache
+    doctor_check_toolchain
     doctor_check_git_identity
 }
 

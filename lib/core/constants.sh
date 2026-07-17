@@ -18,4 +18,4 @@ readonly LAB_CONFIG_FILE="${LAB_CONFIG_FILE:-${CONFIG_DIR}/lab.conf}"
 readonly OUTPUT_DIR="${LAB_ROOT}/output"
 
 readonly DOCTOR_CONFIG="${LAB_ROOT}/config/doctor.conf"
-readonly BOOTSTRAP_CONFIG="${LAB_ROOT}/config/bootstrap.conf"
+readonly TOOLCHAIN_CONFIG="${LAB_ROOT}/config/tools.conf"
