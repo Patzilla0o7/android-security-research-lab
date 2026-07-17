@@ -10,6 +10,7 @@ doctor_initialize() {
     WARN_COUNT=0
     FAIL_COUNT=0
 
+    config_load
     [[ -f "${DOCTOR_CONFIG}" ]] && source "${DOCTOR_CONFIG}"
 }
 
@@ -85,6 +86,14 @@ doctor_check_disk() {
     fi
 }
 
+doctor_check_lab_config() {
+    if config_is_loaded; then
+        record_pass "Lab Config" "${LAB_CONFIG_FILE}"
+    else
+        record_warn "Lab Config" "Not found (copy config/lab.conf.example)"
+    fi
+}
+
 doctor_check_git() {
     if command -v git >/dev/null; then
         record_pass "Git" "$(git --version | awk '{print $3}')"
@@ -150,6 +159,7 @@ doctor_execute() {
     doctor_check_cpu
     doctor_check_memory
     doctor_check_disk
+    doctor_check_lab_config
 
     doctor_check_git
     doctor_check_python

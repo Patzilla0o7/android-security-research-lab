@@ -20,6 +20,8 @@ Commands
 
     bootstrap
 
+        plan (default) | --apply
+
     workspace
 
     repo

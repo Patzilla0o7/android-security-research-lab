@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+# Android Security Research Lab local configuration.
+#
+# Copy this file to config/lab.conf and customize it for the Ubuntu 24.04 host.
+# config/lab.conf is intentionally ignored by Git.
+
+# External AOSP checkout. Do not place an AOSP checkout inside tracked ASRL files.
+ANDROID_WORKSPACE="${LAB_ROOT}/workspace/aosp"
+
+# AOSP source selection.
+ANDROID_MANIFEST_URL="https://android.googlesource.com/platform/manifest"
+ANDROID_BRANCH="android-latest-release"
+
+# Default build and tooling locations. Override for the local host as required.
+ANDROID_BUILD_TARGET="aosp_x86_64-eng"
+JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
+ADB_PATH="/usr/bin/adb"
+CCACHE_DIR="${LAB_ROOT}/.cache/ccache"

@@ -12,6 +12,8 @@ Workspace
 
 Bootstrap
 
+See `bootstrap.md` for Ubuntu environment setup and installation behavior.
+
 Configuration
 
 Roadmap

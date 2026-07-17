@@ -1,2 +1,5 @@
 # Local planning context for GPT/agent sessions.
 GPT_PROJECT_PLAN.md
+
+# Machine-specific ASRL configuration.
+config/lab.conf
