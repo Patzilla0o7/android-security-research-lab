@@ -3,3 +3,6 @@ GPT_PROJECT_PLAN.md
 
 # Machine-specific ASRL configuration.
 config/lab.conf
+
+# Metadata created while editing through a macOS shared directory.
+.DS_Store

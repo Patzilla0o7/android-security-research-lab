@@ -13,6 +13,8 @@
 | `lab bootstrap plan` | 显示缺失工具及可用安装方式 |
 | `lab bootstrap --apply` | 通过 `sudo` 安装具有 `apt` 安装方式的缺失工具 |
 
+`lab --help` 和 `lab --version` 分别等价于 `lab help` 和 `lab version`。
+
 ## 已预留命令
 
 以下命令已注册，但目前只会报告模块尚未实现：
@@ -27,6 +29,7 @@
 ## 执行约定
 
 - 未知命令会打印帮助并以非零状态退出。
+- 参数错误使用退出码 `2`；尚未实现的占位命令使用退出码 `3`。
 - `bootstrap plan` 为只读操作。
 - `bootstrap --apply` 会执行 `sudo apt-get update` 和 `sudo apt-get install`，因此必须显式指定。
 - 所有命令应在 Ubuntu 24.04 中运行，而不是 macOS 编辑主机。

@@ -8,7 +8,9 @@ Android Security Research Lab
 
 Usage
 
-    lab <command>
+    lab <command> [options]
+    lab --help
+    lab --version
 
 Commands
 
@@ -29,6 +31,8 @@ Commands
     build
 
     research
+
+Run 'lab <command> --help' for command-specific usage where available.
 
 EOF
 

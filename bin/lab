@@ -8,7 +8,11 @@ export LAB_ROOT
 
 source "${LAB_ROOT}/lib/core/init.sh"
 
-COMMAND="${1:-help}"
+case "${1:-help}" in
+    -h|--help) COMMAND="help" ;;
+    -V|--version) COMMAND="version" ;;
+    *) COMMAND="${1:-help}" ;;
+esac
 
 COMMAND_FILE="${LAB_ROOT}/lib/commands/${COMMAND}.sh"
 
@@ -22,7 +26,7 @@ if [[ ! -f "${COMMAND_FILE}" ]]; then
 
     command_help
 
-    exit 1
+    exit "${EXIT_USAGE}"
 
 fi
 
