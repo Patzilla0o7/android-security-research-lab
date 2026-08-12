@@ -1,0 +1,159 @@
+package cli
+
+import (
+	"fmt"
+	"io"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
+
+	"github.com/Patzilla0o7/android-security-research-lab/internal/doctor"
+)
+
+const (
+	exitSuccess        = 0
+	exitFailure        = 1
+	exitUsage          = 2
+	exitNotImplemented = 3
+)
+
+var placeholderCommands = map[string]string{
+	"workspace": "Workspace",
+	"repo":      "Repo",
+	"build":     "Build",
+	"research":  "Research",
+}
+
+// Run executes the ASRL command line and returns its process exit code.
+func Run(args []string, stdout, stderr io.Writer) int {
+	command := "help"
+	var commandArgs []string
+	if len(args) > 0 {
+		command = args[0]
+		commandArgs = args[1:]
+	}
+
+	switch command {
+	case "-h", "--help":
+		command = "help"
+	case "-V", "--version":
+		command = "version"
+	}
+
+	switch command {
+	case "help":
+		printHelp(stdout)
+		return exitSuccess
+	case "version":
+		return printVersion(stdout, stderr)
+	case "doctor":
+		root, err := projectRoot()
+		if err != nil {
+			fmt.Fprintf(stderr, "[FAIL] %v\n", err)
+			return exitFailure
+		}
+		if err := doctor.Run(root, stdout); err != nil {
+			fmt.Fprintf(stderr, "[FAIL] Doctor failed: %v\n", err)
+			return exitFailure
+		}
+		return exitSuccess
+	case "bootstrap":
+		return runShellService(command, commandArgs, stdout, stderr)
+	default:
+		if label, ok := placeholderCommands[command]; ok {
+			fmt.Fprintf(stdout, "[INFO] %s module is not implemented.\n", label)
+			return exitNotImplemented
+		}
+		fmt.Fprintf(stderr, "[FAIL] Unknown command: %s\n\n", command)
+		printHelp(stderr)
+		return exitUsage
+	}
+}
+
+func printHelp(w io.Writer) {
+	fmt.Fprint(w, `
+Android Security Research Lab
+
+Usage
+
+    lab <command> [options]
+    lab --help
+    lab --version
+
+Commands
+
+    help
+    version
+    doctor
+    bootstrap
+        plan (default) | --apply
+    workspace
+    repo
+    build
+    research
+
+Run 'lab <command> --help' for command-specific usage where available.
+
+`)
+}
+
+func printVersion(stdout, stderr io.Writer) int {
+	root, err := projectRoot()
+	if err != nil {
+		fmt.Fprintf(stderr, "[FAIL] %v\n", err)
+		return exitFailure
+	}
+	data, err := os.ReadFile(filepath.Join(root, "VERSION"))
+	if err != nil {
+		fmt.Fprintf(stderr, "[FAIL] Unable to read VERSION: %v\n", err)
+		return exitFailure
+	}
+	fmt.Fprintf(stdout, "Android Security Research Lab\n\nVersion : %s\n", strings.TrimSpace(string(data)))
+	return exitSuccess
+}
+
+func runShellService(command string, args []string, stdout, stderr io.Writer) int {
+	root, err := projectRoot()
+	if err != nil {
+		fmt.Fprintf(stderr, "[FAIL] %v\n", err)
+		return exitFailure
+	}
+	serviceArgs := append([]string{command}, args...)
+	cmd := exec.Command(filepath.Join(root, "scripts", "lab-shell"), serviceArgs...)
+	cmd.Dir = root
+	cmd.Env = append(os.Environ(), "LAB_ROOT="+root)
+	cmd.Stdout = stdout
+	cmd.Stderr = stderr
+	cmd.Stdin = os.Stdin
+	if err := cmd.Run(); err != nil {
+		if exitErr, ok := err.(*exec.ExitError); ok {
+			return exitErr.ExitCode()
+		}
+		fmt.Fprintf(stderr, "[FAIL] Unable to run Shell service: %v\n", err)
+		return exitFailure
+	}
+	return exitSuccess
+}
+
+func projectRoot() (string, error) {
+	if root := os.Getenv("ASRL_ROOT"); root != "" {
+		return filepath.Abs(root)
+	}
+	wd, err := os.Getwd()
+	if err != nil {
+		return "", fmt.Errorf("unable to determine project root: %w", err)
+	}
+	for dir := wd; ; dir = filepath.Dir(dir) {
+		if _, err := os.Stat(filepath.Join(dir, "VERSION")); err == nil {
+			if _, err := os.Stat(filepath.Join(dir, "config")); err == nil {
+				return dir, nil
+			}
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+	}
+	return "", fmt.Errorf("unable to locate ASRL project root")
+}

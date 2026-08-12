@@ -4,5 +4,8 @@ GPT_PROJECT_PLAN.md
 # Machine-specific ASRL configuration.
 config/lab.conf
 
+# Compiled Go CLI and local Go build artifacts.
+build/
+
 # Metadata created while editing through a macOS shared directory.
 .DS_Store

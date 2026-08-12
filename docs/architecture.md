@@ -1,4 +1,7 @@
-# 项目架构
+| `bin/lab` | 稳定启动器，优先运行 Go 二进制 |
+| `cmd/lab/` | Go 程序入口 |
+| `internal/` | CLI、配置、安全、工具链和领域工作流 |
+| `scripts/` 与 `lib/` | 构建脚本及保留的 Shell 服务 |# 项目架构
 
 ## 执行环境
 
@@ -8,10 +11,10 @@ ASRL 脚本的目标平台为 Ubuntu 24.04。代码可通过共享目录在 macO
 
 ```text
 bin/lab
-  -> lib/core/init.sh
-  -> lib/commands/<command>.sh
-  -> lib/services/<domain>.sh
-  -> lib/core/* and config/*
+  -> build/lab (Go CLI)
+     -> internal/*
+     -> scripts/lab-shell
+        -> lib/services/* (保留的 Shell 服务)
 ```
 
 | 层级 | 职责 |
@@ -29,9 +32,10 @@ bin/lab
 bin/                 CLI 命令入口
 config/              环境与工具链配置
 docs/                项目文档
-lib/core/            共享运行时基础能力
-lib/commands/        CLI 命令适配层
-lib/services/        已实现的业务工作流
+cmd/lab/             Go 程序入口
+internal/            Go 基础能力与业务工作流
+scripts/             构建与 Shell 适配
+lib/                 迁移期 Shell 服务
 output/              可清理的运行输出
 research/            未来的长期漏洞研究记录
 templates/           未来的研究与报告模板
@@ -45,12 +49,11 @@ tools/               未来的第三方工具资产
 
 ```text
 config/tools.conf
-       -> lib/core/toolchain.sh
-          -> lab doctor     (检测与报告)
-          -> lab bootstrap  (生成计划与安装)
+       -> internal/toolchain -> lab doctor
+       -> lib/core/toolchain.sh -> lab bootstrap
 ```
 
-Bootstrap 不会解析 Doctor 的终端输出。两个命令调用相同的共享检测函数，避免检查规则与安装规则发生漂移。
+迁移期间 Go Doctor 与 Shell Bootstrap 都解析同一份工具清单。Bootstrap 计划逻辑迁移到 Go 后，将删除重复的 Shell 检测实现。
 
 ## 数据保留原则
 

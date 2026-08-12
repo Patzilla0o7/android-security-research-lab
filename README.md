@@ -5,6 +5,7 @@ ASRL 是面向 Android Framework、安全研究与漏洞分析的长期实验平
 ## 当前可用功能
 
 - 统一命令入口：`bin/lab`
+- Go CLI、配置解析、路径保护和工具链检测
 - Ubuntu 24.04 环境检查：`lab doctor`
 - 共享工具清单：Doctor 与 Bootstrap 使用同一份 `config/tools.conf`
 - 安装计划与 apt 安装：`lab bootstrap plan`、`lab bootstrap --apply`
@@ -13,19 +14,31 @@ ASRL 是面向 Android Framework、安全研究与漏洞分析的长期实验平
 
 `workspace`、`repo`、`build`、`research` 命令已预留，但尚未实现业务逻辑。
 
+## Go 与 Shell 边界
+
+项目 CLI 和 Doctor 已迁移到 Go。`bootstrap --apply` 以及未来需要加载 AOSP `envsetup.sh`、执行 `lunch`/`m` 的适配继续保留 Shell。
+
+```bash
+./scripts/build-go.sh
+./tests/run.sh
+./bin/lab doctor
+```
+
+`bin/lab` 优先运行 `build/lab`；未构建时使用 Shell 兼容入口。
+
 ## 架构
 
 ```text
 bin/lab
-  -> lib/commands/<command>.sh
-    -> lib/services/<domain>.sh
-      -> lib/core/* + config/*
+  -> build/lab (Go CLI)
+    -> internal/*
+    -> scripts/lab-shell (保留的 Shell 服务)
 ```
 
-- `bin/`：CLI 分发，不放业务逻辑。
-- `lib/commands/`：命令参数与服务调用。
-- `lib/services/`：领域工作流，例如 Doctor、Bootstrap。
-- `lib/core/`：日志、配置、工具清单解析和通用函数。
+- `bin/`：稳定启动入口。
+- `cmd/` 与 `internal/`：Go CLI、基础能力与领域工作流。
+- `scripts/`：Go 构建及必须保留的 Shell 适配。
+- `lib/`：迁移期 Shell 服务，当前保留 Bootstrap。
 - `config/`：唯一配置来源。
 - `tests/`：不依赖 AOSP 工作区的自动化测试。
 

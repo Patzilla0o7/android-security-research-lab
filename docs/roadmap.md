@@ -2,6 +2,12 @@
 
 ASRL 当前已经完成统一 CLI、Ubuntu Doctor、共享工具链、Bootstrap 安装计划、本地配置加载和基础测试。后续开发按安全依赖关系推进。
 
+## 当前：Go 迁移
+
+- 已完成 Go CLI、配置解析、路径安全、工具清单检测和 Doctor。
+- Bootstrap 的计划逻辑待迁移到 Go，`apt-get` 执行层保留 Shell。
+- 下一步实现 Go Workspace `status|init`，随后实现 Repo 工作流。
+
 ## 近期：CLI 与配置基础
 
 - 统一全局及子命令帮助、退出码和错误信息。

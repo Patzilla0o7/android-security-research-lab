@@ -6,6 +6,12 @@
 ./tests/run.sh
 ```
 
+统一入口先执行 `go test ./...`，再执行 Shell 兼容回归测试。构建 Go CLI：
+
+```bash
+./scripts/build-go.sh
+```
+
 ## 当前测试
 
 | 测试 | 覆盖范围 |

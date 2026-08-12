@@ -1,39 +1,14 @@
 #!/usr/bin/env bash
 
+# Stable launcher: prefer the compiled Go CLI and retain a Shell fallback while
+# hosts transition to the Go toolchain.
 set -euo pipefail
 
-LAB_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ASRL_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export ASRL_ROOT
 
-export LAB_ROOT
-
-source "${LAB_ROOT}/lib/core/init.sh"
-
-case "${1:-help}" in
-    -h|--help) COMMAND="help" ;;
-    -V|--version) COMMAND="version" ;;
-    *) COMMAND="${1:-help}" ;;
-esac
-
-COMMAND_FILE="${LAB_ROOT}/lib/commands/${COMMAND}.sh"
-
-if [[ ! -f "${COMMAND_FILE}" ]]; then
-
-    error "Unknown command: ${COMMAND}"
-
-    echo
-
-    source "${LAB_ROOT}/lib/commands/help.sh"
-
-    command_help
-
-    exit "${EXIT_USAGE}"
-
+if [[ -x "${ASRL_ROOT}/build/lab" ]]; then
+    exec "${ASRL_ROOT}/build/lab" "$@"
 fi
 
-source "${COMMAND_FILE}"
-
-FUNCTION="command_${COMMAND}"
-
-shift || true
-
-"${FUNCTION}" "$@"
+exec "${ASRL_ROOT}/scripts/lab-shell" "$@"
