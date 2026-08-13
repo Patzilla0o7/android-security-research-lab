@@ -62,10 +62,55 @@ cmd/lab + internal/*
 
 ## Workspace 配置
 
+先创建一个独立的 AOSP Workspace 档案：
+
 ```bash
-./bin/lab workspace add android-14 --path /data/aosp/android-14 --branch android-14.0.0_r75
+./bin/lab workspace add android-14 \
+  --path /data/aosp/android-14 \
+  --manifest https://android.googlesource.com/platform/manifest \
+  --branch android-14.0.0_r75 \
+  --target aosp_x86_64-eng \
+  --java-home /usr/lib/jvm/java-17-openjdk-amd64
+
 ./bin/lab workspace use android-14
 ./bin/lab workspace init
 ```
 
-Workspace 档案与活动选择是机器本地配置，已被 Git 忽略。不要将 token、密码、私钥或研究中的敏感证据提交到仓库。
+`workspace add` 参数：
+
+| 参数 | 必需 | 默认值 | 说明 |
+|---|---|---|---|
+| `<name>` | 是 | 无 | 档案名称；只允许字母、数字、`-`、`_` |
+| `--path` | 是 | 无 | AOSP 源码目录，必须是安全的绝对路径 |
+| `--manifest` | 否 | `https://android.googlesource.com/platform/manifest` | Repo manifest 仓库地址 |
+| `--branch` | 否 | `android-latest-release` | Repo manifest 分支或 Android tag |
+| `--target` | 否 | `aosp_x86_64-eng` | 未来传给 `lunch` 的默认构建目标 |
+| `--java-home` | 否 | 空 | 该 Workspace 使用的 JDK 路径 |
+
+`--target` 当前会保存到档案的 `ANDROID_BUILD_TARGET`，待 Build 工作流实现后用于选择构建目标。`CCACHE_DIR` 无需传入，系统会按档案名称自动生成独立路径。
+
+管理多个版本：
+
+```bash
+./bin/lab workspace add android-15 \
+  --path /data/aosp/android-15 \
+  --branch android-15.0.0_r1 \
+  --target aosp_x86_64-eng
+
+./bin/lab workspace list
+./bin/lab workspace use android-15
+./bin/lab workspace current
+./bin/lab workspace status android-14
+./bin/lab workspace init android-14
+```
+
+### Workspace 档案与全局配置
+
+| 文件 | 用途 |
+|---|---|
+| `config/workspaces/<name>.conf` | 当前正式的多 Workspace 配置；保存源码路径、manifest、分支、构建目标、Java 和 ccache 路径 |
+| `.local/active-workspace` | 保存 `workspace use` 选择的活动档案名称 |
+| `config/lab.conf` | 旧单 Workspace/本机全局配置的兼容文件，不用于多 Workspace 的选择和切换 |
+| `config/lab.conf.example` | 旧配置格式模板；新增 AOSP 版本应优先使用 `workspace add` |
+
+Workspace 档案与活动选择都是机器本地数据，已被 Git 忽略。`workspace use` 只切换活动配置，不会同步、构建或删除源码。不要将 token、密码、私钥或研究中的敏感证据提交到仓库。
