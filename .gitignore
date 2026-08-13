@@ -3,6 +3,8 @@ GPT_PROJECT_PLAN.md
 
 # Machine-specific ASRL configuration.
 config/lab.conf
+config/workspaces/*.conf
+.local/
 
 # Compiled Go CLI and local Go build artifacts.
 build/

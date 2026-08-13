@@ -12,7 +12,7 @@ ASRL 是面向 Android Framework、安全研究与漏洞分析的长期实验平
 - 本地实验室配置模板与配置校验
 - Bash 语法与配置/工具清单/Bootstrap 参数测试
 
-`workspace status|init` 已实现；`repo`、`build`、`research` 仍为预留命令。
+多 Workspace 档案管理已实现；`repo`、`build`、`research` 仍为预留命令。
 
 ## Go 与 Shell 边界
 
@@ -38,7 +38,7 @@ bin/lab
 - `bin/`：稳定启动入口。
 - `cmd/` 与 `internal/`：Go CLI、基础能力与领域工作流。
 - `scripts/`：Go 构建及必须保留的 Shell 适配。
-- `lib/`：迁移期 Shell 服务，当前保留 Bootstrap。
+- `lib/`：迁移期兼容代码；新增业务不再放入此处。
 - `config/`：唯一配置来源。
 - `tests/`：不依赖 AOSP 工作区的自动化测试。
 
@@ -61,10 +61,12 @@ bin/lab
 ./bin/lab doctor
 ```
 
-## 本地配置
+## Workspace 配置
 
 ```bash
-cp config/lab.conf.example config/lab.conf
+./bin/lab workspace add android-14 --path /data/aosp/android-14 --branch android-14.0.0_r75
+./bin/lab workspace use android-14
+./bin/lab workspace init
 ```
 
-`config/lab.conf` 是机器本地配置，已被 Git 忽略。不要将 token、密码、私钥或研究中的敏感证据提交到仓库。
+Workspace 档案与活动选择是机器本地配置，已被 Git 忽略。不要将 token、密码、私钥或研究中的敏感证据提交到仓库。

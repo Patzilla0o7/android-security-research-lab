@@ -9,7 +9,7 @@ import (
 
 	"github.com/Patzilla0o7/android-security-research-lab/internal/bootstrap"
 	"github.com/Patzilla0o7/android-security-research-lab/internal/doctor"
-	"github.com/Patzilla0o7/android-security-research-lab/internal/workspace"
+	"github.com/Patzilla0o7/android-security-research-lab/internal/workspaces"
 )
 
 const (
@@ -71,7 +71,7 @@ func Run(args []string, stdout, stderr io.Writer) int {
 			fmt.Fprintf(stderr, "[FAIL] %v\n", err)
 			return exitFailure
 		}
-		return workspace.Run(root, commandArgs, stdout, stderr)
+		return workspaces.Run(root, commandArgs, stdout, stderr)
 	default:
 		if label, ok := placeholderCommands[command]; ok {
 			fmt.Fprintf(stdout, "[INFO] %s module is not implemented.\n", label)

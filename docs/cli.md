@@ -12,8 +12,12 @@
 | `lab bootstrap` | 等同于 `lab bootstrap plan`，不会修改系统 |
 | `lab bootstrap plan` | 显示缺失工具及可用安装方式 |
 | `lab bootstrap --apply` | Go 生成计划，并由最小 Shell 适配器执行 apt |
-| `lab workspace status` | 显示配置路径、目录和 Repo 初始化状态 |
-| `lab workspace init` | 校验安全路径并创建工作区目录 |
+| `lab workspace list` | 列出档案并标记活动 Workspace |
+| `lab workspace add` | 添加独立的 AOSP 版本档案 |
+| `lab workspace use` | 切换活动档案，不触发同步或构建 |
+| `lab workspace current` | 输出活动档案名称 |
+| `lab workspace status [name]` | 查看活动或指定 Workspace 状态 |
+| `lab workspace init [name]` | 创建活动或指定 Workspace 目录 |
 
 `lab --help` 和 `lab --version` 分别等价于 `lab help` 和 `lab version`。
 

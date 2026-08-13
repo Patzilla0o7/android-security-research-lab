@@ -9,6 +9,7 @@
 | [doctor.md](doctor.md) | 环境检测项目、状态级别与使用方式 |
 | [bootstrap.md](bootstrap.md) | 安装计划、apt 安装与安全行为 |
 | [toolchain.md](toolchain.md) | 统一工具清单、检测与安装方式 |
+| [workspace.md](workspace.md) | 多 AOSP Workspace 添加、切换与状态管理 |
 | [testing.md](testing.md) | 测试入口与验证范围 |
 | [roadmap.md](roadmap.md) | 当前完成度与后续开发顺序 |
 
