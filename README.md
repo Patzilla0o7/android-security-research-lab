@@ -12,7 +12,7 @@ ASRL 是面向 Android Framework、安全研究与漏洞分析的长期实验平
 - 本地实验室配置模板与配置校验
 - Go 单元测试与 CLI 二进制冒烟测试
 
-多 Workspace 和 Repo `status|init|sync` 已实现；`build`、`research` 仍为预留命令。
+多 Workspace 和 Repo `status|init|sync|branch|patch` 已实现；`build`、`research` 仍为预留命令。
 
 ## Go 与 Shell 边界
 
@@ -151,3 +151,28 @@ Repo 命令默认操作活动 Workspace，也可以通过 `--workspace <name>` �
 `--project` 可以重复；不指定时同步 manifest 中的所有项目。还支持 `--force-sync`，
 它会在必要时覆盖指向不同 object directory 的 Git 目录并可能丢失 refs，只应在
 明确理解影响时使用。
+
+### 研究 Branch 与 Patch
+
+```bash
+# 默认只显示计划，增加 --apply 才创建
+./bin/lab repo branch create binder-cve \
+  --workspace android-14 \
+  --project frameworks/base \
+  --apply
+
+# 导出未提交 diff 和最近两个提交
+./bin/lab repo patch export \
+  --workspace android-14 \
+  --project frameworks/base \
+  --commits 2
+
+# 默认只检查 Patch；增加 --apply 才导入
+./bin/lab repo patch import \
+  --workspace android-15 \
+  --project frameworks/base \
+  --file /path/to/patch.diff
+```
+
+Patch bundle 保存到 `output/repo/<workspace>/patches/`，包含元数据和 SHA-256
+校验值。详细用法见 [Repo 工作流](docs/repo.md)。

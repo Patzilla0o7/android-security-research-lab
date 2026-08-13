@@ -34,6 +34,10 @@ func Run(root string, args []string, stdout, stderr io.Writer) int {
 		return initialize(root, args, stdout, stderr)
 	case "sync":
 		return syncWorkspace(root, args, stdout, stderr)
+	case "branch":
+		return branchCommand(root, args, stdout, stderr)
+	case "patch":
+		return patchCommand(root, args, stdout, stderr)
 	default:
 		return usageError(stderr, "unknown repo subcommand: "+command)
 	}
@@ -47,6 +51,10 @@ Commands:
     init [--workspace <name>]
     sync [--workspace <name>] [--jobs <count>] [--project <path>]...
          [--retry-fetches <count>] [--no-clone-bundle] [--force-sync] [--apply]
+    branch list [--workspace <name>]
+    branch create <name> [--workspace <name>] [--project <path>]... [--apply]
+    patch export [--workspace <name>] --project <path>... [--commits <count>]
+    patch import [--workspace <name>] --project <path> --file <patch> [--apply]
 
 sync is plan-only unless --apply is provided. init and applied sync write logs
 under output/repo/<workspace>/.

@@ -61,3 +61,45 @@ Repo 命令默认使用活动 Workspace；`--workspace <name>` 可以操作指�
 项目的最终下载字节总量，所以不会显示可靠的全局“剩余 GB”。为了保留终端
 进度检测，动态 stderr 进度可能不会重复写入日志；普通命令输出仍保存到
 `output/repo/<workspace>/<timestamp>-sync.log`。同步前必须已存在 `.repo`。
+
+## 研究分支
+
+```bash
+./bin/lab repo branch list --workspace android-14
+
+# 默认计划模式；增加 --apply 才执行 repo start
+./bin/lab repo branch create binder-cve \
+  --workspace android-14 \
+  --project frameworks/base \
+  --project frameworks/native \
+  --apply
+```
+
+不指定 `--project` 时对 manifest 中全部项目创建分支。本阶段不提供高风险的 branch delete。
+
+## Patch 导出与导入
+
+```bash
+# 导出未提交修改和最近两个提交
+./bin/lab repo patch export \
+  --workspace android-14 \
+  --project frameworks/base \
+  --commits 2
+
+# 默认只运行 git apply --check
+./bin/lab repo patch import \
+  --workspace android-15 \
+  --project frameworks/base \
+  --file /path/to/working-tree.diff
+
+# 显式应用
+./bin/lab repo patch import \
+  --workspace android-15 \
+  --project frameworks/base \
+  --file /path/to/0001-fix.patch \
+  --apply
+```
+
+导出目录为 `output/repo/<workspace>/patches/<timestamp>/<project>/`，包含
+`*.patch`、`working-tree.diff`、`metadata.json` 和 `SHA256SUMS`。`.patch` 使用
+`git am` 保留提交元数据，其他 diff 使用 `git apply`。

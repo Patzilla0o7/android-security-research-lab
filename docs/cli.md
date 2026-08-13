@@ -21,6 +21,8 @@
 | `lab repo status [--workspace <name>]` | 查看 Repo 工具与初始化状态 |
 | `lab repo init [--workspace <name>]` | 使用档案 manifest 和 branch 初始化 Repo |
 | `lab repo sync [options]` | 支持项目、重试和实时进度；`--apply` 后执行并归档日志 |
+| `lab repo branch list|create` | 列出或显式创建跨项目研究分支 |
+| `lab repo patch export|import` | 导出研究修改或检查、导入 Patch |
 
 `lab --help` 和 `lab --version` 分别等价于 `lab help` 和 `lab version`。
 
