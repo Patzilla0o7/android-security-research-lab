@@ -132,3 +132,22 @@ Repo 命令默认操作活动 Workspace，也可以通过 `--workspace <name>` �
 
 `repo init` 和实际同步的日志保存在 `output/repo/<workspace>/`。`repo sync` 未指定
 `--jobs` 时默认使用主机逻辑 CPU 数；未指定 `--apply` 时不会修改 Workspace。
+交互式终端运行时会显示 Repo/Git 的项目级进度，以及当前 fetch 的对象数、百分比
+和已接收字节。由于 Git 对象数量和压缩复用是动态的，无法在开始前准确显示所有
+项目最终需要下载的总字节数。
+
+选择项目和增强重试：
+
+```bash
+./bin/lab repo sync --workspace android-14 \
+  --project frameworks/base \
+  --project system/core \
+  --retry-fetches 3 \
+  --no-clone-bundle \
+  --jobs 4 \
+  --apply
+```
+
+`--project` 可以重复；不指定时同步 manifest 中的所有项目。还支持 `--force-sync`，
+它会在必要时覆盖指向不同 object directory 的 Git 目录并可能丢失 refs，只应在
+明确理解影响时使用。

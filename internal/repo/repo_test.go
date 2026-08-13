@@ -20,7 +20,7 @@ func TestStatusInitAndSync(t *testing.T) {
 	binDir := t.TempDir()
 	record := filepath.Join(t.TempDir(), "repo-calls")
 	fakeRepo := filepath.Join(binDir, "repo")
-	script := "#!/usr/bin/env bash\nset -euo pipefail\nprintf '%s|%s\\n' \"$PWD\" \"$*\" >> \"$REPO_TEST_RECORD\"\nif [[ \"${1:-}\" == init ]]; then mkdir -p .repo; touch .repo/manifest.xml; fi\n"
+	script := "#!/usr/bin/env bash\nset -euo pipefail\nprintf '%s|%s\\n' \"$PWD\" \"$*\" >> \"$REPO_TEST_RECORD\"\nif [[ \"${1:-}\" == init ]]; then mkdir -p .repo; touch .repo/manifest.xml; fi\nif [[ \"${1:-}\" == sync ]]; then echo 'Fetching: 50% (1/2)' >&2; fi\n"
 	if err := os.WriteFile(fakeRepo, []byte(script), 0o755); err != nil {
 		t.Fatal(err)
 	}
@@ -56,11 +56,14 @@ func TestStatusInitAndSync(t *testing.T) {
 	before, _ := os.ReadFile(record)
 	stdout.Reset()
 	stderr.Reset()
-	if code := Run(root, []string{"sync", "--workspace", "android-14", "--jobs", "4", "--apply"}, &stdout, &stderr); code != 0 {
+	if code := Run(root, []string{"sync", "--workspace", "android-14", "--jobs", "4", "--project", "frameworks/base", "--retry-fetches", "3", "--no-clone-bundle", "--force-sync", "--apply"}, &stdout, &stderr); code != 0 {
 		t.Fatalf("sync code=%d out=%s err=%s", code, stdout.String(), stderr.String())
 	}
+	if !strings.Contains(stderr.String(), "Fetching: 50% (1/2)") {
+		t.Fatalf("live progress was not forwarded: %q", stderr.String())
+	}
 	after, _ := os.ReadFile(record)
-	if len(after) <= len(before) || !strings.Contains(string(after), "sync -c -j 4") {
+	if len(after) <= len(before) || !strings.Contains(string(after), "sync -c -j 4 --retry-fetches=3 --no-clone-bundle --force-sync frameworks/base") {
 		t.Fatalf("sync call=%q", after)
 	}
 }

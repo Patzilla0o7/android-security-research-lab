@@ -33,4 +33,31 @@ Repo 命令默认使用活动 Workspace；`--workspace <name>` 可以操作指�
 ./bin/lab repo sync --workspace android-14 --jobs 8 --apply
 ```
 
-未指定 `--jobs` 时使用主机逻辑 CPU 数。实际命令为 `repo sync -c -j <jobs>`，日志保存到 `output/repo/<workspace>/<timestamp>-sync.log`。同步前必须已存在 `.repo`。
+可选同步参数：
+
+| 参数 | 说明 |
+|---|---|
+| `--project <path>` | 只同步指定项目；可重复，例如 `frameworks/base` 和 `system/core` |
+| `--retry-fetches <count>` | Git fetch 失败后的重试次数 |
+| `--no-clone-bundle` | 禁用 clone bundle，直接从远端抓取 |
+| `--force-sync` | 必要时覆盖指向不同 object directory 的 Git 目录；可能丢失 refs，谨慎使用 |
+| `--jobs <count>` | 并发任务数；默认使用主机逻辑 CPU 数 |
+| `--apply` | 实际执行；缺少该参数时只显示计划 |
+
+例如只同步 Framework 和 System Core：
+
+```bash
+./bin/lab repo sync --workspace android-14 \
+  --project frameworks/base \
+  --project system/core \
+  --retry-fetches 3 \
+  --no-clone-bundle \
+  --jobs 4 \
+  --apply
+```
+
+交互式终端运行时，ASRL 保留 Repo/Git 的终端 stderr，使其显示项目级完成数、
+当前 fetch 的对象数、百分比和已接收字节。Repo/Git 在同步前不能准确计算所有
+项目的最终下载字节总量，所以不会显示可靠的全局“剩余 GB”。为了保留终端
+进度检测，动态 stderr 进度可能不会重复写入日志；普通命令输出仍保存到
+`output/repo/<workspace>/<timestamp>-sync.log`。同步前必须已存在 `.repo`。

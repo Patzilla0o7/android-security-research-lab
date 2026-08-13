@@ -45,7 +45,8 @@ func Usage(w io.Writer) {
 Commands:
     status [--workspace <name>]
     init [--workspace <name>]
-    sync [--workspace <name>] [--jobs <count>] [--apply]
+    sync [--workspace <name>] [--jobs <count>] [--project <path>]...
+         [--retry-fetches <count>] [--no-clone-bundle] [--force-sync] [--apply]
 
 sync is plan-only unless --apply is provided. init and applied sync write logs
 under output/repo/<workspace>/.
@@ -116,7 +117,11 @@ func syncWorkspace(root string, args []string, stdout, stderr io.Writer) int {
 		jobs = runtime.NumCPU()
 	}
 	fmt.Fprintln(stdout, "\n============================================================\nRepo Sync Plan\n============================================================")
-	fmt.Fprintf(stdout, "Workspace : %s\nPath      : %s\nJobs      : %d\nMode      : %s\n", profile.Name, profile.Path, jobs, map[bool]string{false: "plan", true: "apply"}[opts.apply])
+	projects := "all manifest projects"
+	if len(opts.projects) > 0 {
+		projects = strings.Join(opts.projects, ", ")
+	}
+	fmt.Fprintf(stdout, "Workspace     : %s\nPath          : %s\nProjects      : %s\nJobs          : %d\nRetry fetches : %d\nClone bundle  : %t\nForce sync    : %t\nProgress      : interactive terminal\nMode          : %s\n", profile.Name, profile.Path, projects, jobs, opts.retryFetches, !opts.noCloneBundle, opts.forceSync, map[bool]string{false: "plan", true: "apply"}[opts.apply])
 	if !isDirectory(filepath.Join(profile.Path, ".repo")) {
 		return fail(stderr, fmt.Errorf("workspace is not initialized; run 'lab repo init --workspace %s'", profile.Name))
 	}
@@ -127,7 +132,18 @@ func syncWorkspace(root string, args []string, stdout, stderr io.Writer) int {
 	if _, err := lookPath("repo"); err != nil {
 		return fail(stderr, fmt.Errorf("repo command is not installed; run 'lab bootstrap plan'"))
 	}
-	return execute(root, profile, "sync", []string{"sync", "-c", "-j", fmt.Sprint(jobs)}, stdout, stderr)
+	arguments := []string{"sync", "-c", "-j", fmt.Sprint(jobs)}
+	if opts.retryFetches > 0 {
+		arguments = append(arguments, fmt.Sprintf("--retry-fetches=%d", opts.retryFetches))
+	}
+	if opts.noCloneBundle {
+		arguments = append(arguments, "--no-clone-bundle")
+	}
+	if opts.forceSync {
+		arguments = append(arguments, "--force-sync")
+	}
+	arguments = append(arguments, opts.projects...)
+	return execute(root, profile, "sync", arguments, stdout, stderr)
 }
 
 func checkedProfile(root, requested string) (workspaces.Profile, error) {
@@ -160,7 +176,15 @@ func execute(root string, profile workspaces.Profile, operation string, args []s
 	command := exec.Command("repo", args...)
 	command.Dir = profile.Path
 	command.Stdout = io.MultiWriter(stdout, logFile)
-	command.Stderr = io.MultiWriter(stderr, logFile)
+	if isTerminal(stderr) {
+		// Repo and Git only render interactive transfer progress when stderr is
+		// a terminal. Preserve that file descriptor instead of hiding it behind
+		// the pipe os/exec creates for an io.MultiWriter.
+		command.Stderr = stderr
+		fmt.Fprintln(stdout, "[INFO] Interactive progress is shown on the terminal and may not be repeated in the log.")
+	} else {
+		command.Stderr = io.MultiWriter(stderr, logFile)
+	}
 	command.Stdin = os.Stdin
 	fmt.Fprintf(stdout, "[INFO] Running: repo %s\n[INFO] Log: %s\n", strings.Join(args, " "), logPath)
 	if err := command.Run(); err != nil {
@@ -175,6 +199,14 @@ func execute(root string, profile workspaces.Profile, operation string, args []s
 }
 
 func isDirectory(path string) bool { info, err := os.Stat(path); return err == nil && info.IsDir() }
+func isTerminal(w io.Writer) bool {
+	file, ok := w.(*os.File)
+	if !ok {
+		return false
+	}
+	info, err := file.Stat()
+	return err == nil && info.Mode()&os.ModeCharDevice != 0
+}
 func usageError(w io.Writer, message string) int {
 	fmt.Fprintf(w, "[FAIL] %s\n", message)
 	Usage(w)

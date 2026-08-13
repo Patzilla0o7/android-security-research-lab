@@ -20,7 +20,7 @@
 | `lab workspace init [name]` | 创建活动或指定 Workspace 目录 |
 | `lab repo status [--workspace <name>]` | 查看 Repo 工具与初始化状态 |
 | `lab repo init [--workspace <name>]` | 使用档案 manifest 和 branch 初始化 Repo |
-| `lab repo sync [options]` | 默认显示计划；`--apply` 后执行同步并归档日志 |
+| `lab repo sync [options]` | 支持项目、重试和实时进度；`--apply` 后执行并归档日志 |
 
 `lab --help` 和 `lab --version` 分别等价于 `lab help` 和 `lab version`。
 
