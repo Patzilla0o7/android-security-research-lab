@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 
+	"github.com/Patzilla0o7/android-security-research-lab/internal/bootstrap"
 	"github.com/Patzilla0o7/android-security-research-lab/internal/doctor"
+	"github.com/Patzilla0o7/android-security-research-lab/internal/workspace"
 )
 
 const (
@@ -19,10 +20,9 @@ const (
 )
 
 var placeholderCommands = map[string]string{
-	"workspace": "Workspace",
-	"repo":      "Repo",
-	"build":     "Build",
-	"research":  "Research",
+	"repo":     "Repo",
+	"build":    "Build",
+	"research": "Research",
 }
 
 // Run executes the ASRL command line and returns its process exit code.
@@ -59,7 +59,19 @@ func Run(args []string, stdout, stderr io.Writer) int {
 		}
 		return exitSuccess
 	case "bootstrap":
-		return runShellService(command, commandArgs, stdout, stderr)
+		root, err := projectRoot()
+		if err != nil {
+			fmt.Fprintf(stderr, "[FAIL] %v\n", err)
+			return exitFailure
+		}
+		return bootstrap.Run(root, commandArgs, stdout, stderr)
+	case "workspace":
+		root, err := projectRoot()
+		if err != nil {
+			fmt.Fprintf(stderr, "[FAIL] %v\n", err)
+			return exitFailure
+		}
+		return workspace.Run(root, commandArgs, stdout, stderr)
 	default:
 		if label, ok := placeholderCommands[command]; ok {
 			fmt.Fprintf(stdout, "[INFO] %s module is not implemented.\n", label)
@@ -110,29 +122,6 @@ func printVersion(stdout, stderr io.Writer) int {
 		return exitFailure
 	}
 	fmt.Fprintf(stdout, "Android Security Research Lab\n\nVersion : %s\n", strings.TrimSpace(string(data)))
-	return exitSuccess
-}
-
-func runShellService(command string, args []string, stdout, stderr io.Writer) int {
-	root, err := projectRoot()
-	if err != nil {
-		fmt.Fprintf(stderr, "[FAIL] %v\n", err)
-		return exitFailure
-	}
-	serviceArgs := append([]string{command}, args...)
-	cmd := exec.Command(filepath.Join(root, "scripts", "lab-shell"), serviceArgs...)
-	cmd.Dir = root
-	cmd.Env = append(os.Environ(), "LAB_ROOT="+root)
-	cmd.Stdout = stdout
-	cmd.Stderr = stderr
-	cmd.Stdin = os.Stdin
-	if err := cmd.Run(); err != nil {
-		if exitErr, ok := err.(*exec.ExitError); ok {
-			return exitErr.ExitCode()
-		}
-		fmt.Fprintf(stderr, "[FAIL] Unable to run Shell service: %v\n", err)
-		return exitFailure
-	}
 	return exitSuccess
 }
 

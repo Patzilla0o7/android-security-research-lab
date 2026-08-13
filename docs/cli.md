@@ -11,7 +11,9 @@
 | `lab doctor` | 检查 Ubuntu 主机硬件、本地配置、工具链与 Git 身份 |
 | `lab bootstrap` | 等同于 `lab bootstrap plan`，不会修改系统 |
 | `lab bootstrap plan` | 显示缺失工具及可用安装方式 |
-| `lab bootstrap --apply` | 通过 `sudo` 安装具有 `apt` 安装方式的缺失工具 |
+| `lab bootstrap --apply` | Go 生成计划，并由最小 Shell 适配器执行 apt |
+| `lab workspace status` | 显示配置路径、目录和 Repo 初始化状态 |
+| `lab workspace init` | 校验安全路径并创建工作区目录 |
 
 `lab --help` 和 `lab --version` 分别等价于 `lab help` 和 `lab version`。
 
@@ -21,7 +23,6 @@
 
 | 命令 | 计划职责 |
 |---|---|
-| `lab workspace` | AOSP 工作区初始化与状态管理 |
 | `lab repo` | Repo 同步、状态、分支与补丁管理 |
 | `lab build` | AOSP 构建 target、日志与输出采集 |
 | `lab research` | CVE/0day 项目创建和研究资产管理 |

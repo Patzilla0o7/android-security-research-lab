@@ -6,7 +6,7 @@
 # config/lab.conf is intentionally ignored by Git.
 
 # External AOSP checkout. Do not place an AOSP checkout inside tracked ASRL files.
-ANDROID_WORKSPACE="${LAB_ROOT}/workspace/aosp"
+ANDROID_WORKSPACE="${LAB_ROOT}/../asrl-workspace/aosp"
 
 # AOSP source selection.
 ANDROID_MANIFEST_URL="https://android.googlesource.com/platform/manifest"

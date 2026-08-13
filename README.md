@@ -12,7 +12,7 @@ ASRL 是面向 Android Framework、安全研究与漏洞分析的长期实验平
 - 本地实验室配置模板与配置校验
 - Bash 语法与配置/工具清单/Bootstrap 参数测试
 
-`workspace`、`repo`、`build`、`research` 命令已预留，但尚未实现业务逻辑。
+`workspace status|init` 已实现；`repo`、`build`、`research` 仍为预留命令。
 
 ## Go 与 Shell 边界
 

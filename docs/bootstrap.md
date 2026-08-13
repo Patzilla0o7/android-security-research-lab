@@ -10,8 +10,8 @@ lab bootstrap plan
 lab bootstrap --apply
 ```
 
-- `plan` 为默认模式。它使用与 `lab doctor` 相同的工具链检查，并展示可用安装方式；不会修改主机。
-- `--apply` 会运行 `sudo apt-get update`，并安装具有 `apt` 安装方式的缺失工具。只有 `manual` 方式的工具仍会显示给操作者手动处理。
+- `plan` 为默认模式。Go 实现使用与 `lab doctor` 相同的工具链模块，并展示可用安装方式；不会修改主机。
+- `--apply` 由 Go 选择包，再调用 `scripts/bootstrap-apt.sh` 运行 `sudo apt-get update` 并安装具有 `apt` 安装方式的缺失工具。只有 `manual` 方式的工具仍会显示给操作者手动处理。
 
 共享的 [工具清单](../config/tools.conf) 基于 AOSP 对 Ubuntu 18.04 及以上版本的构建要求，并加入了 ASRL 所需的 OpenJDK 17、repo、ccache 等工具。安装后运行：
 
