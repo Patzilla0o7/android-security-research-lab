@@ -154,25 +154,165 @@ Repo 命令默认操作活动 Workspace，也可以通过 `--workspace <name>` �
 
 ### 研究 Branch 与 Patch
 
+Branch 用于在一个或多个 AOSP Git 项目中创建同名研究分支，隔离漏洞复现、
+补丁移植和实验修改。它不会切换 Android 版本；Android 版本仍由 Workspace
+档案中的 manifest branch/tag 决定。
+
+#### 前置条件
+
+开始前确认 Workspace 已完成 Repo 初始化，并检查当前状态：
+
 ```bash
-# 默认只显示计划，增加 --apply 才创建
+./bin/lab workspace status android-14
+./bin/lab repo status --workspace android-14
+```
+
+Branch 和 Patch 命令默认使用活动 Workspace；以下示例显式指定
+`--workspace android-14`，避免在多个版本间误操作。
+
+#### 查看研究分支
+
+```bash
+./bin/lab repo branch list --workspace android-14
+```
+
+该命令在 Workspace 根目录执行 `repo branches`，只读取各项目的分支状态。
+
+#### 创建研究分支
+
+先查看计划，不修改源码：
+
+```bash
 ./bin/lab repo branch create binder-cve \
   --workspace android-14 \
   --project frameworks/base \
-  --apply
+  --project frameworks/native
+```
 
-# 导出未提交 diff 和最近两个提交
+确认项目范围后显式创建：
+
+```bash
+./bin/lab repo branch create binder-cve \
+  --workspace android-14 \
+  --project frameworks/base \
+  --project frameworks/native \
+  --apply
+```
+
+实际等价于：
+
+```text
+repo start binder-cve frameworks/base frameworks/native
+```
+
+`--project` 可以重复。不指定任何 `--project` 时，Repo 会对 manifest 中的全部
+项目创建同名分支，范围很大，建议研究时明确列出项目。Branch 名称会经过 Git
+兼容性检查。当前不提供高风险的 branch delete。
+
+#### 导出 Patch bundle
+
+只导出工作树中已跟踪文件的未提交修改：
+
+```bash
+./bin/lab repo patch export \
+  --workspace android-14 \
+  --project frameworks/base
+```
+
+同时导出最近两个已提交修改：
+
+```bash
 ./bin/lab repo patch export \
   --workspace android-14 \
   --project frameworks/base \
   --commits 2
+```
 
-# 默认只检查 Patch；增加 --apply 才导入
+可以重复 `--project`，一次导出多个项目：
+
+```bash
+./bin/lab repo patch export \
+  --workspace android-14 \
+  --project frameworks/base \
+  --project frameworks/native \
+  --commits 1
+```
+
+导出结构：
+
+```text
+output/repo/android-14/patches/<timestamp>/
+  frameworks__base/
+    0001-example.patch       # git format-patch 生成的已提交修改
+    working-tree.diff       # git diff --binary HEAD 生成的未提交修改
+    metadata.json           # Workspace、项目、manifest branch、基线 commit
+    SHA256SUMS              # bundle 文件完整性校验
+```
+
+`--commits 0` 或不指定时不生成提交 Patch。当前未跟踪文件不会自动包含在
+`working-tree.diff` 中；如需导出新文件，先在对应项目执行 `git add <file>`，
+再运行 export。Patch bundle 位于可清理的 `output/`，重要研究成果应复制到未来
+的 `research/<case>/` 长期资产目录。
+
+验证导出文件：
+
+```bash
+cd output/repo/android-14/patches/<timestamp>/frameworks__base
+sha256sum -c SHA256SUMS
+```
+
+#### 检查和导入 Patch
+
+普通工作树 diff 默认只检查，不修改目标 Workspace：
+
+```bash
 ./bin/lab repo patch import \
   --workspace android-15 \
   --project frameworks/base \
-  --file /path/to/patch.diff
+  --file /absolute/path/to/working-tree.diff
 ```
 
-Patch bundle 保存到 `output/repo/<workspace>/patches/`，包含元数据和 SHA-256
-校验值。详细用法见 [Repo 工作流](docs/repo.md)。
+输出 `Patch check passed` 后，再显式应用：
+
+```bash
+./bin/lab repo patch import \
+  --workspace android-15 \
+  --project frameworks/base \
+  --file /absolute/path/to/working-tree.diff \
+  --apply
+```
+
+导入 `git format-patch` 文件：
+
+```bash
+./bin/lab repo patch import \
+  --workspace android-15 \
+  --project frameworks/base \
+  --file /absolute/path/to/0001-example.patch \
+  --apply
+```
+
+导入行为：
+
+| 文件类型 | 检查 | `--apply` 行为 |
+|---|---|---|
+| `*.patch` | `git apply --check` | `git am`，保留作者、提交说明和提交元数据 |
+| 其他 diff | `git apply --check` | `git apply`，只修改工作树，不自动创建提交 |
+
+导入失败时不会自动使用 `--3way`、`--reject` 或强制覆盖。应先检查目标项目的
+本地修改和冲突，再手动处理。`patch import` 每次只接受一个 `--project` 和一个
+`--file`，避免 Patch 被错误应用到多个仓库。
+
+#### 典型漏洞研究流程
+
+```text
+同步干净的 Android 14 Workspace
+  -> 为相关项目创建 binder-cve 研究分支
+  -> 修改源码并完成复现/修复实验
+  -> 导出已提交 Patch 和未提交 diff
+  -> 校验 SHA256SUMS 并归档研究资产
+  -> 在 Android 15 Workspace 中先检查 Patch
+  -> 显式导入、构建并验证跨版本影响
+```
+
+完整 Repo 说明见 [Repo 工作流](docs/repo.md)。
