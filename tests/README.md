@@ -22,4 +22,4 @@ Automation
 ./tests/run.sh
 ```
 
-当前测试覆盖统一配置模板加载、必填配置校验、工具清单解析和 Bootstrap 参数解析。测试不依赖 AOSP 工作区。
+`run.sh` 执行全部 Go 单元测试和一个 Shell CLI 启动器冒烟测试。测试覆盖配置、路径安全、工具链、Bootstrap、CLI 和多 Workspace 工作流，不依赖 AOSP 源码。

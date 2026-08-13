@@ -3,9 +3,8 @@
 `bin/lab` 是 ASRL 的命令入口。
 
 它只负责三项工作：
+1. 定位并导出 `ASRL_ROOT`。
+2. 优先运行已经构建的 `build/lab`。
+3. 二进制不存在时调用 `scripts/build-go.sh` 完成首次构建。
 
-1. 定位并导出 `LAB_ROOT`。
-2. 从 `lib/core/init.sh` 加载共享核心运行时。
-3. 将 `lab <command>` 分发到 `lib/commands/<command>.sh`。
-
-业务逻辑必须放在 `lib/services/`，不能放在本目录。详见 [CLI 文档](../docs/cli.md)。
+业务逻辑位于 `internal/`，不能放在本目录。详见 [CLI 文档](../docs/cli.md)。

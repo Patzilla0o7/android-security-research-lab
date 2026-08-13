@@ -1,6 +1,6 @@
 # Configuration
 
-本目录保存 ASRL 的全局配置与本机 Workspace 档案。Go 服务通过 `internal/config` 读取数据配置；保留的 Shell 适配仍使用 `lib/core/config.sh`。
+本目录保存 ASRL 的全局配置与本机 Workspace 档案。Go 服务通过 `internal/config` 读取数据配置。
 
 ## 配置文件
 
