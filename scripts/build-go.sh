@@ -9,6 +9,6 @@ if ! command -v go >/dev/null 2>&1; then
     exit 1
 fi
 
-mkdir -p "${LAB_ROOT}/build"
-go build -o "${LAB_ROOT}/build/lab" "${LAB_ROOT}/cmd/lab"
-echo "Built ${LAB_ROOT}/build/lab"
+mkdir -p "${LAB_ROOT}/bin"
+go build -o "${LAB_ROOT}/bin/lab" "${LAB_ROOT}/cmd/lab"
+echo "Built ${LAB_ROOT}/bin/lab"

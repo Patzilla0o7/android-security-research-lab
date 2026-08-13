@@ -12,6 +12,7 @@ fi
 (
     cd "${TEST_ROOT}"
     go test ./...
+    "${TEST_ROOT}/scripts/build-go.sh" >/dev/null
 )
 
 "${TEST_DIR}/cli_test.sh"

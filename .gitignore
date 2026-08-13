@@ -8,6 +8,7 @@ config/workspaces/*.conf
 
 # Compiled Go CLI and local Go build artifacts.
 build/
+bin/lab
 
 # Metadata created while editing through a macOS shared directory.
 .DS_Store

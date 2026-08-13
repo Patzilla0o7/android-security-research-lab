@@ -9,14 +9,14 @@
 测试入口执行：
 
 1. `go test ./...`，覆盖 CLI、配置、路径安全、工具链、Bootstrap 和多 Workspace。
-2. `tests/cli_test.sh`，验证 `bin/lab` 启动器和进程退出码。
+2. `tests/cli_test.sh`，验证 `bin/lab` 二进制和进程退出码。
 
 其他验证命令：
 
 ```bash
 go vet ./...
 ./scripts/build-go.sh
-bash -n bin/lab scripts/*.sh tests/*.sh
+bash -n scripts/*.sh tests/*.sh
 git diff --check
 ```
 

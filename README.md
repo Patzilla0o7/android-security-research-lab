@@ -10,7 +10,7 @@ ASRL 是面向 Android Framework、安全研究与漏洞分析的长期实验平
 - 共享工具清单：Doctor 与 Bootstrap 使用同一份 `config/tools.conf`
 - 安装计划与 apt 安装：`lab bootstrap plan`、`lab bootstrap --apply`
 - 本地实验室配置模板与配置校验
-- Go 单元测试与薄 Shell 启动器冒烟测试
+- Go 单元测试与 CLI 二进制冒烟测试
 
 多 Workspace 档案管理已实现；`repo`、`build`、`research` 仍为预留命令。
 
@@ -24,18 +24,18 @@ ASRL 是面向 Android Framework、安全研究与漏洞分析的长期实验平
 ./bin/lab doctor
 ```
 
-`bin/lab` 优先运行 `build/lab`；未构建时使用 Go 工具链自动完成首次构建。
+`bin/lab` 是 `scripts/build-go.sh` 生成的 Go 二进制，不受 Git 管理。
 
 ## 架构
 
 ```text
-bin/lab
-  -> build/lab (Go CLI)
-    -> internal/*
+cmd/lab + internal/*
+  -> go build
+    -> bin/lab (Go CLI)
     -> scripts/bootstrap-apt.sh (仅显式安装)
 ```
 
-- `bin/`：稳定启动入口。
+- `bin/`：存放本机 Go 编译产物。
 - `cmd/` 与 `internal/`：Go CLI、基础能力与领域工作流。
 - `scripts/`：Go 构建及必须保留的 Shell 适配。
 - `config/`：唯一配置来源。
