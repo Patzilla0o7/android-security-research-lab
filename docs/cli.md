@@ -18,6 +18,9 @@
 | `lab workspace current` | 输出活动档案名称 |
 | `lab workspace status [name]` | 查看活动或指定 Workspace 状态 |
 | `lab workspace init [name]` | 创建活动或指定 Workspace 目录 |
+| `lab repo status [--workspace <name>]` | 查看 Repo 工具与初始化状态 |
+| `lab repo init [--workspace <name>]` | 使用档案 manifest 和 branch 初始化 Repo |
+| `lab repo sync [options]` | 默认显示计划；`--apply` 后执行同步并归档日志 |
 
 `lab --help` 和 `lab --version` 分别等价于 `lab help` 和 `lab version`。
 
@@ -27,7 +30,6 @@
 
 | 命令 | 计划职责 |
 |---|---|
-| `lab repo` | Repo 同步、状态、分支与补丁管理 |
 | `lab build` | AOSP 构建 target、日志与输出采集 |
 | `lab research` | CVE/0day 项目创建和研究资产管理 |
 

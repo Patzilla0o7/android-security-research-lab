@@ -10,7 +10,8 @@
 | [bootstrap.md](bootstrap.md) | 安装计划、apt 安装与安全行为 |
 | [toolchain.md](toolchain.md) | 统一工具清单、检测与安装方式 |
 | [workspace.md](workspace.md) | 多 AOSP Workspace 添加、切换与状态管理 |
+| [repo.md](repo.md) | Repo 状态、初始化、同步计划与日志 |
 | [testing.md](testing.md) | 测试入口与验证范围 |
 | [roadmap.md](roadmap.md) | 当前完成度与后续开发顺序 |
 
-尚未实现的 Workspace、Repo、Build、Research 工作流将在对应服务落地后补充文档。
+尚未实现的 Build、Research 工作流将在对应服务落地后补充文档。

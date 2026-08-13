@@ -9,6 +9,7 @@ LAB="${TEST_ROOT}/bin/lab"
 "${LAB}" --version | grep -q "Version :"
 "${LAB}" bootstrap --help | grep -q "Usage: lab bootstrap"
 "${LAB}" workspace --help | grep -q "Usage: lab workspace"
+"${LAB}" repo --help | grep -q "Usage: lab repo"
 
 set +e
 "${LAB}" unknown-command >/dev/null 2>&1

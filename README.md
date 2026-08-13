@@ -12,11 +12,11 @@ ASRL 是面向 Android Framework、安全研究与漏洞分析的长期实验平
 - 本地实验室配置模板与配置校验
 - Go 单元测试与 CLI 二进制冒烟测试
 
-多 Workspace 档案管理已实现；`repo`、`build`、`research` 仍为预留命令。
+多 Workspace 和 Repo `status|init|sync` 已实现；`build`、`research` 仍为预留命令。
 
 ## Go 与 Shell 边界
 
-项目 CLI、Doctor、Bootstrap 计划和 Workspace 已使用 Go。`bootstrap --apply` 以及未来需要加载 AOSP `envsetup.sh`、执行 `lunch`/`m` 的适配继续保留 Shell。
+项目 CLI、Doctor、Bootstrap 计划、Workspace 和 Repo 工作流已使用 Go。`bootstrap --apply` 以及未来需要加载 AOSP `envsetup.sh`、执行 `lunch`/`m` 的适配继续保留 Shell。
 
 ```bash
 ./scripts/build-go.sh
@@ -114,3 +114,21 @@ cmd/lab + internal/*
 | `config/lab.conf.example` | 旧配置格式模板；新增 AOSP 版本应优先使用 `workspace add` |
 
 Workspace 档案与活动选择都是机器本地数据，已被 Git 忽略。`workspace use` 只切换活动配置，不会同步、构建或删除源码。不要将 token、密码、私钥或研究中的敏感证据提交到仓库。
+
+## Repo 使用
+
+Repo 命令默认操作活动 Workspace，也可以通过 `--workspace <name>` 指定档案：
+
+```bash
+./bin/lab repo status
+./bin/lab repo init --workspace android-14
+
+# 只显示同步计划，不访问网络
+./bin/lab repo sync --workspace android-14 --jobs 8
+
+# 显式执行同步
+./bin/lab repo sync --workspace android-14 --jobs 8 --apply
+```
+
+`repo init` 和实际同步的日志保存在 `output/repo/<workspace>/`。`repo sync` 未指定
+`--jobs` 时默认使用主机逻辑 CPU 数；未指定 `--apply` 时不会修改 Workspace。

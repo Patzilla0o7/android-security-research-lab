@@ -10,5 +10,9 @@ config/workspaces/*.conf
 build/
 bin/lab
 
+# Disposable command logs; keep the directory documentation.
+output/*
+!output/README.md
+
 # Metadata created while editing through a macOS shared directory.
 .DS_Store
