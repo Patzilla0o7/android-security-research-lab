@@ -3,6 +3,7 @@ package build
 import (
 	"bytes"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -69,5 +70,26 @@ func TestBuildValidation(t *testing.T) {
 	}
 	if _, err := parseOptions([]string{"--jobs", "0"}, true); err == nil {
 		t.Fatal("zero jobs accepted")
+	}
+}
+
+func TestAOSPAdapterAllowsEnvsetupUnsetVariables(t *testing.T) {
+	root := t.TempDir()
+	buildDir := filepath.Join(root, "build")
+	if err := os.MkdirAll(buildDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	envsetup := ": \"$TOP\"\nlunch() { printf 'lunch=%s\\n' \"$1\"; }\nm() { printf 'm=%s\\n' \"$*\"; }\n"
+	if err := os.WriteFile(filepath.Join(buildDir, "envsetup.sh"), []byte(envsetup), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	adapter := filepath.Join("..", "..", "scripts", "aosp-build.sh")
+	command := exec.Command("bash", adapter, root, "aosp_x86_64-eng", "2", "", "services")
+	output, err := command.CombinedOutput()
+	if err != nil {
+		t.Fatalf("adapter failed: %v\n%s", err, output)
+	}
+	if !strings.Contains(string(output), "lunch=aosp_x86_64-eng") || !strings.Contains(string(output), "m=-j2 services") {
+		t.Fatalf("unexpected adapter output: %s", output)
 	}
 }

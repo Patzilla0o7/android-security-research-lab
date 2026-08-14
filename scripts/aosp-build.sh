@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+# AOSP envsetup.sh intentionally probes variables such as TOP before defining
+# them, so nounset is incompatible with the environment it provides.
+set -eo pipefail
 
 if [[ "$#" -lt 4 ]]; then
     echo "Usage: aosp-build.sh <workspace> <target> <jobs> <ccache-dir> [module ...]" >&2
