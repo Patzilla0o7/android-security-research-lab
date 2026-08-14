@@ -19,10 +19,12 @@
 | `lab workspace status [name]` | 查看活动或指定 Workspace 状态 |
 | `lab workspace init [name]` | 创建活动或指定 Workspace 目录 |
 | `lab repo status [--workspace <name>]` | 查看 Repo 工具与初始化状态 |
-| `lab repo init [--workspace <name>]` | 使用档案 manifest 和 branch 初始化 Repo |
+| `lab repo init [options]` | 预览或执行 Repo 初始化，支持 Partial Clone |
 | `lab repo sync [options]` | 支持项目、重试和实时进度；`--apply` 后执行并归档日志 |
 | `lab repo branch list|create` | 列出或显式创建跨项目研究分支 |
 | `lab repo patch export|import` | 导出研究修改或检查、导入 Patch |
+| `lab build [plan] [options]` | 预览或执行完整、模块和增量 AOSP 构建 |
+| `lab build status` | 查看最近一次构建结果、耗时和日志 |
 
 `lab --help` 和 `lab --version` 分别等价于 `lab help` 和 `lab version`。
 
@@ -32,7 +34,6 @@
 
 | 命令 | 计划职责 |
 |---|---|
-| `lab build` | AOSP 构建 target、日志与输出采集 |
 | `lab research` | CVE/0day 项目创建和研究资产管理 |
 
 ## 执行约定

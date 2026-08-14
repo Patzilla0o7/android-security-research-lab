@@ -35,14 +35,14 @@ func TestStatusInitAndSync(t *testing.T) {
 	}
 	stdout.Reset()
 	stderr.Reset()
-	if code := Run(root, []string{"init", "--workspace", "android-14"}, &stdout, &stderr); code != 0 {
+	if code := Run(root, []string{"init", "--workspace", "android-14", "--partial-clone", "--clone-filter", "blob:limit=10M", "--no-use-superproject", "--apply"}, &stdout, &stderr); code != 0 {
 		t.Fatalf("init code=%d out=%s err=%s", code, stdout.String(), stderr.String())
 	}
 	data, err := os.ReadFile(record)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(string(data), workspacePath+"|init -u https://example.com/manifest -b android-14-tag") {
+	if !strings.Contains(string(data), workspacePath+"|init -u https://example.com/manifest -b android-14-tag --partial-clone --clone-filter=blob:limit=10M --no-use-superproject") {
 		t.Fatalf("init call=%q", data)
 	}
 	if _, err := os.Stat(filepath.Join(root, "output", "repo", "android-14", "20260813-120000-init.log")); err != nil {

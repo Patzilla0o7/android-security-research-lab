@@ -10,6 +10,7 @@ LAB="${TEST_ROOT}/bin/lab"
 "${LAB}" bootstrap --help | grep -q "Usage: lab bootstrap"
 "${LAB}" workspace --help | grep -q "Usage: lab workspace"
 "${LAB}" repo --help | grep -q "Usage: lab repo"
+"$LAB" build --help | grep -q "Usage: lab build"
 
 set +e
 "${LAB}" unknown-command >/dev/null 2>&1
@@ -18,7 +19,7 @@ set -e
 [[ "${status}" -eq 2 ]]
 
 set +e
-"${LAB}" build >/dev/null 2>&1
+"$LAB" research >/dev/null 2>&1
 status=$?
 set -e
 [[ "${status}" -eq 3 ]]

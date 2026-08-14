@@ -30,7 +30,7 @@ func TestUnknownCommand(t *testing.T) {
 
 func TestPlaceholder(t *testing.T) {
 	var stdout, stderr bytes.Buffer
-	if code := Run([]string{"build"}, &stdout, &stderr); code != exitNotImplemented {
+	if code := Run([]string{"research"}, &stdout, &stderr); code != exitNotImplemented {
 		t.Fatalf("Run() code = %d, want %d", code, exitNotImplemented)
 	}
 }

@@ -6,7 +6,7 @@ ASRL 当前已经完成统一 CLI、Ubuntu Doctor、共享工具链、Bootstrap 
 
 - 已完成 Go CLI、配置解析、路径安全、工具清单检测和 Doctor。
 - Bootstrap 计划已迁移到 Go，`apt-get` 执行层保留 Shell。
-- 多 Workspace 以及 Repo `status|init|sync|branch|patch` 已实现；下一步进入 Build。
+- 多 Workspace、Repo 工作流以及 AOSP Build 已实现；下一步进入设备与证据采集。
 
 ## 近期：CLI 与配置基础
 
@@ -20,9 +20,9 @@ ASRL 当前已经完成统一 CLI、Ubuntu Doctor、共享工具链、Bootstrap 
 - 已完成 `lab repo branch list|create` 与 `lab repo patch import|export`。
 - 所有删除、清理和覆盖操作必须进行路径保护并要求显式确认。
 
-## 中期：Build、设备与证据采集
+## 当前：Build、设备与证据采集
 
-- 构建目标、ccache、增量/完整构建和日志归档。
+- 已完成构建目标、ccache、模块/增量/完整构建、日志和状态归档。
 - Emulator/ADB 健康检查与启动流程。
 - logcat、bugreport、tombstone 和截图采集。
 - 按时间与操作组织 `output/`，并在失败时给出日志位置。

@@ -12,7 +12,7 @@ ASRL 是面向 Android Framework、安全研究与漏洞分析的长期实验平
 - 本地实验室配置模板与配置校验
 - Go 单元测试与 CLI 二进制冒烟测试
 
-多 Workspace 和 Repo `status|init|sync|branch|patch` 已实现；`build`、`research` 仍为预留命令。
+多 Workspace、Repo `status|init|sync|branch|patch` 和 AOSP Build 已实现；`research` 仍为预留命令。
 
 ## Go 与 Shell 边界
 
@@ -121,7 +121,8 @@ Repo 命令默认操作活动 Workspace，也可以通过 `--workspace <name>` �
 
 ```bash
 ./bin/lab repo status
-./bin/lab repo init --workspace android-14
+./bin/lab repo init --workspace android-14 --partial-clone --no-use-superproject
+./bin/lab repo init --workspace android-14 --partial-clone --no-use-superproject --apply
 
 # 只显示同步计划，不访问网络
 ./bin/lab repo sync --workspace android-14 --jobs 8
@@ -130,11 +131,12 @@ Repo 命令默认操作活动 Workspace，也可以通过 `--workspace <name>` �
 ./bin/lab repo sync --workspace android-14 --jobs 8 --apply
 ```
 
-`repo init` 和实际同步的日志保存在 `output/repo/<workspace>/`。`repo sync` 未指定
+实际 `repo init` 和同步的日志保存在 `output/repo/<workspace>/`。`repo sync` 未指定
 `--jobs` 时默认使用主机逻辑 CPU 数；未指定 `--apply` 时不会修改 Workspace。
 交互式终端运行时会显示 Repo/Git 的项目级进度，以及当前 fetch 的对象数、百分比
 和已接收字节。由于 Git 对象数量和压缩复用是动态的，无法在开始前准确显示所有
-项目最终需要下载的总字节数。
+项目最终需要下载的总字节数。Partial Clone 仅对新初始化的 Workspace 生效；
+`--clone-filter` 必须与 `--partial-clone` 一起使用。
 
 选择项目和增强重试：
 
@@ -151,6 +153,50 @@ Repo 命令默认操作活动 Workspace，也可以通过 `--workspace <name>` �
 `--project` 可以重复；不指定时同步 manifest 中的所有项目。还支持 `--force-sync`，
 它会在必要时覆盖指向不同 object directory 的 Git 目录并可能丢失 refs，只应在
 明确理解影响时使用。
+
+## AOSP Build
+
+Build 默认只检查环境并显示计划，不执行编译：
+
+```bash
+./bin/lab build --workspace android-14
+```
+
+完整构建需要显式指定 `--apply`：
+
+```bash
+./bin/lab build \
+  --workspace android-14 \
+  --jobs 16 \
+  --apply
+```
+
+构建指定模块时可以重复 `--module`：
+
+```bash
+./bin/lab build \
+  --workspace android-14 \
+  --target aosp_x86_64-userdebug \
+  --module framework-minus-apex \
+  --module services \
+  --jobs 16 \
+  --apply
+```
+
+`--target` 临时覆盖 Workspace 的默认构建目标，不修改档案。省略 `--module`
+时执行完整 target；指定模块时执行模块构建。构建前会检查 Workspace、Repo、
+`build/envsetup.sh`、target、磁盘空间、Java 和 ccache 配置。Go 负责参数、
+路径保护、日志和状态；`scripts/aosp-build.sh` 只负责加载 AOSP Shell 环境并
+执行 `lunch`、`m`。
+
+查看最近一次结果：
+
+```bash
+./bin/lab build status --workspace android-14
+```
+
+日志、历史元数据和 `latest.json` 保存在
+`output/build/<workspace>/`。详细说明见 [Build 工作流](docs/build.md)。
 
 ### 研究 Branch 与 Patch
 

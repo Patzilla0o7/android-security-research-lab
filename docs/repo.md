@@ -14,10 +14,23 @@ Repo 命令默认使用活动 Workspace；`--workspace <name>` 可以操作指�
 ## 初始化
 
 ```bash
-./bin/lab repo init --workspace android-14
+./bin/lab repo init --workspace android-14 \
+  --partial-clone \
+  --clone-filter blob:limit=10M \
+  --no-use-superproject
+
+# 默认只显示计划；显式应用后才初始化
+./bin/lab repo init --workspace android-14 \
+  --partial-clone \
+  --clone-filter blob:limit=10M \
+  --no-use-superproject \
+  --apply
 ```
 
-该命令在档案的源码目录执行 `repo init -u <ANDROID_MANIFEST_URL> -b <ANDROID_BRANCH>`。输出同时显示在终端并保存到 `output/repo/<workspace>/<timestamp>-init.log`。
+`--partial-clone` 按需获取 Git 对象，`--clone-filter` 必须与它一起使用；
+`--no-use-superproject` 禁用 superproject。初始化默认只显示计划，`--apply`
+后才执行并保存日志。这些选项最适合全新的 Workspace，不用于假设性转换已有
+checkout。
 
 ## 同步
 

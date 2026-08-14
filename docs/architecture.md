@@ -10,6 +10,7 @@ cmd/lab + internal/*
   -> go build
      -> bin/lab
         -> scripts/bootstrap-apt.sh (仅在显式 --apply 时)
+        -> scripts/aosp-build.sh (加载 envsetup、执行 lunch 和 m)
 ```
 
 | 层级 | 职责 |
@@ -19,6 +20,7 @@ cmd/lab + internal/*
 | `internal/` | CLI、配置、安全、工具链与领域工作流 |
 | `scripts/build-go.sh` | 构建本机 Go CLI |
 | `scripts/bootstrap-apt.sh` | 最小 apt 特权适配器 |
+| `scripts/aosp-build.sh` | AOSP envsetup、lunch 和 m 的最小 Shell 适配器 |
 | `config/` | 工具清单、环境阈值与本机 Workspace 档案 |
 | `tests/` | Go 测试统一入口和 CLI 二进制冒烟测试 |
 

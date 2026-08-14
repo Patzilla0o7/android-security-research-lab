@@ -7,7 +7,7 @@ config/workspaces/*.conf
 .local/
 
 # Compiled Go CLI and local Go build artifacts.
-build/
+/build/
 bin/lab
 
 # Disposable command logs; keep the directory documentation.

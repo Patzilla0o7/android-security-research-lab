@@ -48,7 +48,8 @@ func Usage(w io.Writer) {
 
 Commands:
     status [--workspace <name>]
-    init [--workspace <name>]
+    init [--workspace <name>] [--partial-clone] [--clone-filter <filter>]
+         [--no-use-superproject] [--apply]
     sync [--workspace <name>] [--jobs <count>] [--project <path>]...
          [--retry-fetches <count>] [--no-clone-bundle] [--force-sync] [--apply]
     branch list [--workspace <name>]
@@ -56,8 +57,8 @@ Commands:
     patch export [--workspace <name>] --project <path>... [--commits <count>]
     patch import [--workspace <name>] --project <path> --file <patch> [--apply]
 
-sync is plan-only unless --apply is provided. init and applied sync write logs
-under output/repo/<workspace>/.
+init and sync are plan-only unless --apply is provided. Applied operations write
+logs under output/repo/<workspace>/.
 `)
 }
 
@@ -93,7 +94,7 @@ func status(root string, args []string, stdout, stderr io.Writer) int {
 }
 
 func initialize(root string, args []string, stdout, stderr io.Writer) int {
-	opts, err := parseOptions(args, false, false)
+	opts, err := parseInitOptions(args)
 	if err != nil {
 		return usageError(stderr, err.Error())
 	}
@@ -101,14 +102,36 @@ func initialize(root string, args []string, stdout, stderr io.Writer) int {
 	if err != nil {
 		return fail(stderr, err)
 	}
+	arguments := []string{"init", "-u", profile.Manifest, "-b", profile.Branch}
+	if opts.partialClone {
+		arguments = append(arguments, "--partial-clone")
+		if opts.cloneFilter != "" {
+			arguments = append(arguments, "--clone-filter="+opts.cloneFilter)
+		}
+	}
+	if opts.noUseSuperproject {
+		arguments = append(arguments, "--no-use-superproject")
+	}
+	fmt.Fprintln(stdout, "\n============================================================\nRepo Init Plan\n============================================================")
+	fmt.Fprintf(stdout, "Workspace       : %s\nPath            : %s\nManifest URL    : %s\nBranch          : %s\nPartial clone   : %t\nClone filter    : %s\nUse superproject: %t\nMode            : %s\n", profile.Name, profile.Path, profile.Manifest, profile.Branch, opts.partialClone, displayDefault(opts.cloneFilter, "none"), !opts.noUseSuperproject, map[bool]string{false: "plan", true: "apply"}[opts.apply])
+	if !opts.apply {
+		fmt.Fprintln(stdout, "No changes were made. Add --apply to initialize the Repo checkout.")
+		return 0
+	}
 	if _, err := lookPath("repo"); err != nil {
 		return fail(stderr, fmt.Errorf("repo command is not installed; run 'lab bootstrap plan'"))
 	}
 	if err := os.MkdirAll(profile.Path, 0o755); err != nil {
 		return fail(stderr, fmt.Errorf("create workspace: %w", err))
 	}
-	arguments := []string{"init", "-u", profile.Manifest, "-b", profile.Branch}
 	return execute(root, profile, "init", arguments, stdout, stderr)
+}
+
+func displayDefault(value, fallback string) string {
+	if value == "" {
+		return fallback
+	}
+	return value
 }
 
 func syncWorkspace(root string, args []string, stdout, stderr io.Writer) int {
