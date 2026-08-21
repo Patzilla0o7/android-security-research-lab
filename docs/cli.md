@@ -8,7 +8,7 @@
 |---|---|
 | `lab help` | 显示命令列表 |
 | `lab version` | 从 `VERSION` 输出项目名称和版本 |
-| `lab doctor` | 检查 Ubuntu 主机硬件、本地配置、工具链与 Git 身份 |
+| `lab doctor [--json]` | 检查 Ubuntu 主机硬件、本地配置、工具链与 Git 身份；硬失败返回非零 |
 | `lab bootstrap` | 等同于 `lab bootstrap plan`，不会修改系统 |
 | `lab bootstrap plan` | 显示缺失工具及可用安装方式 |
 | `lab bootstrap --apply` | Go 生成计划，并由最小 Shell 适配器执行 apt |

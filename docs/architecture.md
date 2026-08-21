@@ -26,9 +26,9 @@ cmd/lab + internal/*
 
 ## Shell 保留边界
 
-当前保留 Shell 用于构建、测试入口和 apt。未来 AOSP 构建需要加载
-`build/envsetup.sh` 并执行 `lunch`、`m` 时，也应通过小型 Shell 适配器完成；
-参数解析、路径保护、日志和结果处理仍由 Go 负责。
+当前保留 Shell 用于本机 Go 构建、测试入口、apt 和 AOSP 构建环境适配。
+`scripts/aosp-build.sh` 负责加载 `build/envsetup.sh` 并执行 `lunch`、`m`；
+参数解析、路径保护、日志和结果处理由 Go 负责。
 
 ## 数据保留原则
 

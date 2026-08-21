@@ -20,12 +20,21 @@ ASRL 当前已经完成统一 CLI、Ubuntu Doctor、共享工具链、Bootstrap 
 - 已完成 `lab repo branch list|create` 与 `lab repo patch import|export`。
 - 所有删除、清理和覆盖操作必须进行路径保护并要求显式确认。
 
-## 当前：Build、设备与证据采集
+## 已完成：Build
 
 - 已完成构建目标、ccache、模块/增量/完整构建、日志和状态归档。
+
+## 当前：基础加固、设备与证据采集
+
+- 同步实现与文档，建立 Ubuntu 24.04 CI。
+- Doctor 硬失败退出码、结构化输出与测试。
 - Emulator/ADB 健康检查与启动流程。
 - logcat、bugreport、tombstone 和截图采集。
 - 按时间与操作组织 `output/`，并在失败时给出日志位置。
+
+当前阶段完成标准：CLI 能识别并等待指定设备，启动受管 Emulator，并生成带设备、
+Workspace、时间、命令和 SHA-256 信息的证据包。Repo 下载与 AOSP 编译继续在专用
+环境中验证，不纳入公共 CI。
 
 ## 中长期：Research、Knowledge 与 Automation
 

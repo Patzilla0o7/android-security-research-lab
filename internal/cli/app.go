@@ -48,12 +48,16 @@ func Run(args []string, stdout, stderr io.Writer) int {
 	case "version":
 		return printVersion(stdout, stderr)
 	case "doctor":
+		if len(commandArgs) > 1 || (len(commandArgs) == 1 && commandArgs[0] != "--json") {
+			fmt.Fprintln(stderr, "[FAIL] Usage: lab doctor [--json]")
+			return exitUsage
+		}
 		root, err := projectRoot()
 		if err != nil {
 			fmt.Fprintf(stderr, "[FAIL] %v\n", err)
 			return exitFailure
 		}
-		if err := doctor.Run(root, stdout); err != nil {
+		if err := doctor.Run(root, commandArgs, stdout); err != nil {
 			fmt.Fprintf(stderr, "[FAIL] Doctor failed: %v\n", err)
 			return exitFailure
 		}

@@ -20,5 +20,8 @@ bash -n scripts/*.sh tests/*.sh
 git diff --check
 ```
 
-测试不依赖 AOSP 源码。Doctor、apt 和未来 Repo/AOSP 行为的主机级验证应在
-Ubuntu 24.04 中执行。
+单元测试和 CLI 冒烟测试不依赖 AOSP 源码。Doctor 和 apt 的主机级验证，以及
+Repo 下载、AOSP 构建的端到端验证，应在 Ubuntu 24.04 的专用环境中执行。
+
+GitHub Actions 负责运行不依赖真实 AOSP Workspace 的 Go、Shell 和 CLI 检查。
+真实 Repo 下载和 AOSP 编译不在公共 CI 中执行。

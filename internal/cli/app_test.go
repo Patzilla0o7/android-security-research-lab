@@ -35,6 +35,13 @@ func TestPlaceholder(t *testing.T) {
 	}
 }
 
+func TestDoctorRejectsUnknownOptions(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+	if code := Run([]string{"doctor", "--unknown"}, &stdout, &stderr); code != exitUsage {
+		t.Fatalf("code = %d, want %d; stderr=%s", code, exitUsage, stderr.String())
+	}
+}
+
 func TestVersion(t *testing.T) {
 	root := t.TempDir()
 	if err := os.WriteFile(filepath.Join(root, "VERSION"), []byte("test-version\n"), 0o600); err != nil {

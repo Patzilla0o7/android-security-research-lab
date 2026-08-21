@@ -6,7 +6,7 @@ ASRL 是面向 Android Framework、安全研究与漏洞分析的长期实验平
 
 - 统一命令入口：`bin/lab`
 - Go CLI、配置解析、路径保护和工具链检测
-- Ubuntu 24.04 环境检查：`lab doctor`
+- Ubuntu 24.04 环境检查：`lab doctor`、`lab doctor --json`
 - 共享工具清单：Doctor 与 Bootstrap 使用同一份 `config/tools.conf`
 - 安装计划与 apt 安装：`lab bootstrap plan`、`lab bootstrap --apply`
 - 本地实验室配置模板与配置校验
@@ -84,10 +84,10 @@ cmd/lab + internal/*
 | `--path` | 是 | 无 | AOSP 源码目录，必须是安全的绝对路径 |
 | `--manifest` | 否 | `https://android.googlesource.com/platform/manifest` | Repo manifest 仓库地址 |
 | `--branch` | 否 | `android-latest-release` | Repo manifest 分支或 Android tag |
-| `--target` | 否 | `aosp_x86_64-eng` | 未来传给 `lunch` 的默认构建目标 |
+| `--target` | 否 | `aosp_x86_64-eng` | 传给 `lunch` 的默认构建目标 |
 | `--java-home` | 否 | 空 | 该 Workspace 使用的 JDK 路径 |
 
-`--target` 当前会保存到档案的 `ANDROID_BUILD_TARGET`，待 Build 工作流实现后用于选择构建目标。`CCACHE_DIR` 无需传入，系统会按档案名称自动生成独立路径。
+`--target` 会保存到档案的 `ANDROID_BUILD_TARGET`，作为 Build 工作流的默认构建目标。`CCACHE_DIR` 无需传入，系统会按档案名称自动生成独立路径。
 
 管理多个版本：
 

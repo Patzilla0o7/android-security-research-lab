@@ -17,6 +17,13 @@
 
 工具链检查包括构建依赖、Git、Python 3、Java 17、repo、ccache、ADB 和 Android Emulator。完整工具定义与安装方式见 [toolchain.md](toolchain.md)。
 
+缺少 required 工具、系统版本不支持或硬件低于最低要求时，Doctor 返回非零退出码；
+recommended 工具缺失和低于推荐配置只产生 warning。自动化可以使用结构化输出：
+
+```bash
+./bin/lab doctor --json
+```
+
 ## 结果解释
 
 - **通过：** 要求已满足。
