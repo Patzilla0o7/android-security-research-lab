@@ -42,4 +42,5 @@ tools/DroidForge (Git submodule)
 - 长期资产：`research/` 以及未来的 `knowledge/`、`automation/`。
 - 本机状态：`config/workspaces/*.conf`、`.local/active-workspace`。
 - 可清理资产：构建日志、logcat、bugreport、截图和 tombstone。
+- 证据索引：`output/evidence/<workspace>/<case>/<timestamp>/` 下的 manifest 与 SHA-256。
 - 可重建资产：AOSP 源码工作区、构建产物和 `bin/lab`。

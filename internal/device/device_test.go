@@ -54,6 +54,22 @@ func TestSelectDeviceRejectsOffline(t *testing.T) {
 	}
 }
 
+func TestSelectDeviceRejectsUnknownSerial(t *testing.T) {
+	adb := fakeRunner{outputs: map[string]string{"devices -l": deviceList}}
+	_, err := selectDevice(context.Background(), adb, "missing")
+	if err == nil || !strings.Contains(err.Error(), "not found") {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func TestSelectDeviceRejectsEmptyList(t *testing.T) {
+	adb := fakeRunner{outputs: map[string]string{"devices -l": "List of devices attached"}}
+	_, err := selectDevice(context.Background(), adb, "")
+	if err == nil || !strings.Contains(err.Error(), "no usable") {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
 func TestStatusUsesSelectedSerial(t *testing.T) {
 	outputs := map[string]string{"devices -l": deviceList}
 	for key, value := range map[string]string{
@@ -99,6 +115,28 @@ func TestListReportsADBFailure(t *testing.T) {
 	}
 }
 
+func TestListIncludesUnavailableDevices(t *testing.T) {
+	adb := fakeRunner{outputs: map[string]string{"devices -l": deviceList}}
+	var stdout, stderr strings.Builder
+	if code := run([]string{"list"}, &stdout, &stderr, adb); code != 0 {
+		t.Fatalf("code=%d stderr=%s", code, stderr.String())
+	}
+	if !strings.Contains(stdout.String(), "R3CN\toffline") || !strings.Contains(stdout.String(), "USB1\tunauthorized") {
+		t.Fatalf("unexpected output: %s", stdout.String())
+	}
+}
+
+func TestStatusReportsPropertyFailure(t *testing.T) {
+	adb := fakeRunner{
+		outputs: map[string]string{"devices -l": deviceList},
+		errors:  map[string]error{"-s emulator-5554 shell getprop ro.build.version.release": errors.New("shell failed")},
+	}
+	var stdout, stderr strings.Builder
+	if code := run([]string{"status"}, &stdout, &stderr, adb); code != 1 || !strings.Contains(stderr.String(), "ro.build.version.release") {
+		t.Fatalf("code=%d stderr=%s", code, stderr.String())
+	}
+}
+
 func TestParseOptions(t *testing.T) {
 	serial, timeout, err := parseOptions([]string{"--serial", "abc", "--timeout", "30s"}, true)
 	if err != nil || serial != "abc" || timeout.String() != "30s" {
@@ -106,5 +144,11 @@ func TestParseOptions(t *testing.T) {
 	}
 	if _, _, err := parseOptions([]string{"--timeout", "0s"}, true); err == nil {
 		t.Fatal("expected invalid timeout")
+	}
+	if _, _, err := parseOptions([]string{"--timeout", "1s"}, false); err == nil {
+		t.Fatal("expected status timeout rejection")
+	}
+	if _, _, err := parseOptions([]string{"--serial"}, true); err == nil {
+		t.Fatal("expected missing serial value")
 	}
 }

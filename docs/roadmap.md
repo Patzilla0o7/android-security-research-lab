@@ -30,8 +30,9 @@ ASRL 当前已经完成统一 CLI、Ubuntu Doctor、共享工具链、Bootstrap 
 - Doctor 硬失败退出码、结构化输出与测试。
 - 已完成 ADB 设备发现、状态读取、多设备保护与启动完成等待。
 - Emulator 生命周期由 DroidForge submodule 独立管理，ASRL 不直接调用。
-- logcat、bugreport、tombstone 和截图采集。
-- 按时间与操作组织 `output/`，并在失败时给出日志位置。
+- 已完成 device-info、logcat、截图、bugreport、tombstones、完整 bundle、采集元数据和 SHA-256 校验。
+- 下一步完善证据脱敏、归档策略和 Research 项目关联。
+- 已按 Workspace、case、UTC 时间组织 `output/evidence/`，失败时保留部分证据。
 
 当前阶段完成标准：CLI 能识别并等待指定设备，启动受管 Emulator，并生成带设备、
 Workspace、时间、命令和 SHA-256 信息的证据包。Repo 下载与 AOSP 编译继续在专用

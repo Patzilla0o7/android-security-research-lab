@@ -12,6 +12,7 @@ ASRL 是面向 Android Framework、安全研究与漏洞分析的长期实验平
 - 本地实验室配置模板与配置校验
 - Go 单元测试与 CLI 二进制冒烟测试
 - ADB 设备发现、状态读取与启动完成等待
+- 设备信息、logcat、截图、bugreport、tombstones 与带 SHA-256 的证据 bundle
 - 以 Git submodule 集成 DroidForge 模拟设备工具链
 
 多 Workspace、Repo `status|init|sync|branch|patch` 和 AOSP Build 已实现；`research` 仍为预留命令。
@@ -29,7 +30,7 @@ git submodule update --init --recursive
 ```
 
 `build-all.sh` 会初始化 `tools/DroidForge`，构建 ASRL 的 `bin/lab`，并构建
-`tools/DroidForge/bin/droidforge`。它要求 Go 1.23+。仅构建 ASRL CLI 时仍可使用
+`tools/DroidForge/bin/droidforge`。它要求 Go 1.22+。仅构建 ASRL CLI 时仍可使用
 `./scripts/build-go.sh`。ASRL 的 `lab` 不会直接调用 DroidForge；DroidForge 负责
 模拟设备生命周期，ASRL 通过标准 ADB 接口使用已启动设备。两个二进制均不受 Git 管理。
 
@@ -59,6 +60,7 @@ cmd/lab + internal/*
 ./bin/lab doctor
 ./bin/lab bootstrap plan
 ./bin/lab device list
+./bin/lab collect bundle --case case-001
 ```
 
 首次克隆推荐同时获取 DroidForge：

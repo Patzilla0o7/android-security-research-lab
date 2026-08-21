@@ -28,6 +28,12 @@
 | `lab device list` | 列出 ADB 设备及其连接状态 |
 | `lab device status` | 安全选择设备并读取系统、构建和 SELinux 状态 |
 | `lab device wait` | 在超时限制内等待设备连接并完成 Android 启动 |
+| `lab collect device-info` | 采集设备与构建属性、SELinux 状态 |
+| `lab collect logcat` | 保存当前 logcat 缓冲区 |
+| `lab collect screenshot` | 通过 ADB 保存并验证 PNG 截图 |
+| `lab collect bugreport` | 生成 bugreport ZIP |
+| `lab collect tombstones` | 将可读取的 tombstone 打包为 TAR |
+| `lab collect bundle` | 尝试所有采集项并生成 manifest 和 SHA-256 bundle |
 
 `lab --help` 和 `lab --version` 分别等价于 `lab help` 和 `lab version`。
 

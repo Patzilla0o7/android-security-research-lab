@@ -28,24 +28,48 @@ type runner interface {
 
 type adbRunner struct{}
 
-func (adbRunner) Output(ctx context.Context, args ...string) (string, error) {
+func (adbRunner) raw(ctx context.Context, args ...string) ([]byte, error) {
 	path, err := exec.LookPath("adb")
 	if err != nil {
-		return "", fmt.Errorf("ADB is not installed or not in PATH")
+		return nil, fmt.Errorf("ADB is not installed or not in PATH")
 	}
-	data, err := exec.CommandContext(ctx, path, args...).CombinedOutput()
+	data, err := exec.CommandContext(ctx, path, args...).Output()
 	if err != nil {
-		detail := strings.TrimSpace(string(data))
+		detail := ""
+		if exitErr, ok := err.(*exec.ExitError); ok {
+			detail = strings.TrimSpace(string(exitErr.Stderr))
+		}
 		if detail == "" {
 			detail = err.Error()
 		}
-		return "", errors.New(detail)
+		return nil, errors.New(detail)
 	}
-	return strings.TrimSpace(string(data)), nil
+	return data, nil
+
+}
+
+func (a adbRunner) Output(ctx context.Context, args ...string) (string, error) {
+	data, err := a.raw(ctx, args...)
+	return strings.TrimSpace(string(data)), err
 }
 
 func Run(args []string, stdout, stderr io.Writer) int {
 	return run(args, stdout, stderr, adbRunner{})
+}
+
+// Resolve selects one usable ADB device, requiring serial when selection is ambiguous.
+func Resolve(ctx context.Context, serial string) (Device, error) {
+	return selectDevice(ctx, adbRunner{}, serial)
+}
+
+// ADBOutput executes ADB and returns its trimmed combined output.
+func ADBOutput(ctx context.Context, args ...string) (string, error) {
+	return adbRunner{}.Output(ctx, args...)
+}
+
+// ADBBytes executes ADB without text conversion or trimming for binary evidence.
+func ADBBytes(ctx context.Context, args ...string) ([]byte, error) {
+	return adbRunner{}.raw(ctx, args...)
 }
 
 func run(args []string, stdout, stderr io.Writer, adb runner) int {

@@ -13,6 +13,7 @@
 | [repo.md](repo.md) | Repo 状态、Partial Clone、同步计划与日志 |
 | [build.md](build.md) | AOSP 构建计划、执行、模块构建、日志与状态 |
 | [device.md](device.md) | ADB 设备发现、状态读取、多设备保护与启动等待 |
+| [collect.md](collect.md) | 设备信息、logcat、证据 bundle 与完整性校验 |
 | [testing.md](testing.md) | 测试入口与验证范围 |
 | [roadmap.md](roadmap.md) | 当前完成度与后续开发顺序 |
 
