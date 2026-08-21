@@ -11,20 +11,27 @@ ASRL 是面向 Android Framework、安全研究与漏洞分析的长期实验平
 - 安装计划与 apt 安装：`lab bootstrap plan`、`lab bootstrap --apply`
 - 本地实验室配置模板与配置校验
 - Go 单元测试与 CLI 二进制冒烟测试
+- ADB 设备发现、状态读取与启动完成等待
+- 以 Git submodule 集成 DroidForge 模拟设备工具链
 
 多 Workspace、Repo `status|init|sync|branch|patch` 和 AOSP Build 已实现；`research` 仍为预留命令。
 
 ## Go 与 Shell 边界
 
-项目 CLI、Doctor、Bootstrap 计划、Workspace 和 Repo 工作流已使用 Go。`bootstrap --apply` 以及未来需要加载 AOSP `envsetup.sh`、执行 `lunch`/`m` 的适配继续保留 Shell。
+项目 CLI、Doctor、Bootstrap 计划、Workspace、Repo、Build 和 Device 工作流已使用 Go。
+`bootstrap --apply` 与加载 AOSP `envsetup.sh`、执行 `lunch`/`m` 的适配继续保留 Shell。
 
 ```bash
-./scripts/build-go.sh
+git submodule update --init --recursive
+./scripts/build-all.sh
 ./tests/run.sh
 ./bin/lab doctor
 ```
 
-`bin/lab` 是 `scripts/build-go.sh` 生成的 Go 二进制，不受 Git 管理。
+`build-all.sh` 会初始化 `tools/DroidForge`，构建 ASRL 的 `bin/lab`，并构建
+`tools/DroidForge/bin/droidforge`。它要求 Go 1.23+。仅构建 ASRL CLI 时仍可使用
+`./scripts/build-go.sh`。ASRL 的 `lab` 不会直接调用 DroidForge；DroidForge 负责
+模拟设备生命周期，ASRL 通过标准 ADB 接口使用已启动设备。两个二进制均不受 Git 管理。
 
 ## 架构
 
@@ -51,6 +58,15 @@ cmd/lab + internal/*
 ./bin/lab help
 ./bin/lab doctor
 ./bin/lab bootstrap plan
+./bin/lab device list
+```
+
+首次克隆推荐同时获取 DroidForge：
+
+```bash
+git clone --recurse-submodules https://github.com/Patzilla0o7/android-security-research-lab.git
+cd android-security-research-lab
+./scripts/build-all.sh
 ```
 
 确认 Bootstrap 计划后，才执行会修改主机的安装操作：

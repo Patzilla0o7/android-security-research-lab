@@ -11,6 +11,11 @@ cmd/lab + internal/*
      -> bin/lab
         -> scripts/bootstrap-apt.sh (仅在显式 --apply 时)
         -> scripts/aosp-build.sh (加载 envsetup、执行 lunch 和 m)
+        -> adb (Device 状态与启动等待)
+
+tools/DroidForge (Git submodule)
+  -> 独立管理 SDK、AVD、Emulator 和自定义 AOSP 镜像
+  -> 不由 lab 运行时直接调用
 ```
 
 | 层级 | 职责 |
@@ -21,12 +26,14 @@ cmd/lab + internal/*
 | `scripts/build-go.sh` | 构建本机 Go CLI |
 | `scripts/bootstrap-apt.sh` | 最小 apt 特权适配器 |
 | `scripts/aosp-build.sh` | AOSP envsetup、lunch 和 m 的最小 Shell 适配器 |
+| `scripts/build-all.sh` | 初始化 DroidForge submodule 并构建两个独立 CLI |
+| `tools/DroidForge` | 独立的模拟设备工具链 Git submodule |
 | `config/` | 工具清单、环境阈值与本机 Workspace 档案 |
 | `tests/` | Go 测试统一入口和 CLI 二进制冒烟测试 |
 
 ## Shell 保留边界
 
-当前保留 Shell 用于本机 Go 构建、测试入口、apt 和 AOSP 构建环境适配。
+当前保留 Shell 用于本机/联合 Go 构建、测试入口、apt 和 AOSP 构建环境适配。
 `scripts/aosp-build.sh` 负责加载 `build/envsetup.sh` 并执行 `lunch`、`m`；
 参数解析、路径保护、日志和结果处理由 Go 负责。
 

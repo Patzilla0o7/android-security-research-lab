@@ -42,6 +42,16 @@ func TestDoctorRejectsUnknownOptions(t *testing.T) {
 	}
 }
 
+func TestDeviceHelp(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+	if code := Run([]string{"device", "--help"}, &stdout, &stderr); code != exitSuccess {
+		t.Fatalf("code = %d; stderr=%s", code, stderr.String())
+	}
+	if !strings.Contains(stdout.String(), "lab device") {
+		t.Fatalf("unexpected help: %s", stdout.String())
+	}
+}
+
 func TestVersion(t *testing.T) {
 	root := t.TempDir()
 	if err := os.WriteFile(filepath.Join(root, "VERSION"), []byte("test-version\n"), 0o600); err != nil {

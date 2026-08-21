@@ -28,7 +28,8 @@ ASRL 当前已经完成统一 CLI、Ubuntu Doctor、共享工具链、Bootstrap 
 
 - 同步实现与文档，建立 Ubuntu 24.04 CI。
 - Doctor 硬失败退出码、结构化输出与测试。
-- Emulator/ADB 健康检查与启动流程。
+- 已完成 ADB 设备发现、状态读取、多设备保护与启动完成等待。
+- Emulator 生命周期由 DroidForge submodule 独立管理，ASRL 不直接调用。
 - logcat、bugreport、tombstone 和截图采集。
 - 按时间与操作组织 `output/`，并在失败时给出日志位置。
 

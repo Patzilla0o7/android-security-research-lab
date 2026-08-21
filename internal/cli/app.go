@@ -9,6 +9,7 @@ import (
 
 	"github.com/Patzilla0o7/android-security-research-lab/internal/bootstrap"
 	buildcommand "github.com/Patzilla0o7/android-security-research-lab/internal/build"
+	"github.com/Patzilla0o7/android-security-research-lab/internal/device"
 	"github.com/Patzilla0o7/android-security-research-lab/internal/doctor"
 	repocommand "github.com/Patzilla0o7/android-security-research-lab/internal/repo"
 	"github.com/Patzilla0o7/android-security-research-lab/internal/workspaces"
@@ -90,6 +91,8 @@ func Run(args []string, stdout, stderr io.Writer) int {
 			return exitFailure
 		}
 		return buildcommand.Run(root, commandArgs, stdout, stderr)
+	case "device":
+		return device.Run(commandArgs, stdout, stderr)
 	default:
 		if label, ok := placeholderCommands[command]; ok {
 			fmt.Fprintf(stdout, "[INFO] %s module is not implemented.\n", label)
@@ -121,6 +124,7 @@ Commands
     workspace
     repo
     build
+    device
     research
 
 Run 'lab <command> --help' for command-specific usage where available.

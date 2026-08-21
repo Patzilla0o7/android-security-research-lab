@@ -25,6 +25,9 @@
 | `lab repo patch export|import` | 导出研究修改或检查、导入 Patch |
 | `lab build [plan] [options]` | 预览或执行完整、模块和增量 AOSP 构建 |
 | `lab build status` | 查看最近一次构建结果、耗时和日志 |
+| `lab device list` | 列出 ADB 设备及其连接状态 |
+| `lab device status` | 安全选择设备并读取系统、构建和 SELinux 状态 |
+| `lab device wait` | 在超时限制内等待设备连接并完成 Android 启动 |
 
 `lab --help` 和 `lab --version` 分别等价于 `lab help` 和 `lab version`。
 
