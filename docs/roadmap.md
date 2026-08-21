@@ -1,54 +1,29 @@
 # 开发路线图
 
-ASRL 当前已经完成统一 CLI、Ubuntu Doctor、共享工具链、Bootstrap 安装计划、本地配置加载和基础测试。后续开发按安全依赖关系推进。
+ASRL 已达到当前使用范围的功能基线，进入稳定维护阶段。项目聚焦 AOSP 环境、设备
+连接和漏洞研究项目管理，不内置证据采集、脱敏或归档系统。
 
-## 当前：Go 迁移
+## 已完成
 
-- 已完成 Go CLI、配置解析、路径安全、工具清单检测和 Doctor。
-- Bootstrap 计划已迁移到 Go，`apt-get` 执行层保留 Shell。
-- 多 Workspace、Repo 工作流以及 AOSP Build 已实现；下一步进入设备与证据采集。
+- Go CLI、配置解析、路径保护、Doctor 和 Bootstrap。
+- 多 AOSP Workspace 添加、切换、状态和目录初始化。
+- Repo 初始化、同步、研究分支以及 Patch 导入导出。
+- AOSP 完整、增量和模块构建编排、日志与状态。
+- DroidForge submodule 和 ASRL/DroidForge 联合构建。
+- ADB 设备发现、状态读取、多设备保护与启动等待。
+- Research case 创建、列表、查看、schema 校验和标准模板。
+- Ubuntu 24.04 CI、Go 单元测试和 CLI 冒烟测试。
 
-## 近期：CLI 与配置基础
+## 当前维护原则
 
-- 统一全局及子命令帮助、退出码和错误信息。
-- 增加绝对路径校验、危险路径保护和非交互约定。
-- 扩展 CLI 分发、配置加载与安全辅助函数测试。
+- 不主动扩展超出当前研究需求的大型子系统。
+- 优先修复真实使用中发现的问题和兼容性回归。
+- 保持 CLI、Workspace profile 和 Research case schema 向后兼容。
+- Repo 下载和 AOSP 编译继续在专用实验环境中验证，不纳入公共 CI。
+- 所有具有修改或覆盖影响的操作继续要求显式 `--apply`。
 
-## 下一阶段：AOSP Workspace 与 Repo
+## 按需演进
 
-- 已完成 `lab repo status|init|sync`。
-- 已完成 `lab repo branch list|create` 与 `lab repo patch import|export`。
-- 所有删除、清理和覆盖操作必须进行路径保护并要求显式确认。
-
-## 已完成：Build
-
-- 已完成构建目标、ccache、模块/增量/完整构建、日志和状态归档。
-
-## 当前：基础加固、设备与证据采集
-
-- 同步实现与文档，建立 Ubuntu 24.04 CI。
-- Doctor 硬失败退出码、结构化输出与测试。
-- 已完成 ADB 设备发现、状态读取、多设备保护与启动完成等待。
-- Emulator 生命周期由 DroidForge submodule 独立管理，ASRL 不直接调用。
-- 已完成 device-info、logcat、截图、bugreport、tombstones、完整 bundle、采集元数据和 SHA-256 校验。
-- 已完成 Research 项目创建、模板、元数据、校验和证据 bundle 关联。
-- 已完成 bundle inspect、严格 verify 和只读脱敏计划。
-- 下一步生成不可覆盖原件的脱敏副本，并完善长期归档策略。
-- 已按 Workspace、case、UTC 时间组织 `output/evidence/`，失败时保留部分证据。
-
-当前阶段完成标准：CLI 能识别并等待指定设备，启动受管 Emulator，并生成带设备、
-Workspace、时间、命令和 SHA-256 信息的证据包。Repo 下载与 AOSP 编译继续在专用
-环境中验证，不纳入公共 CI。
-
-## 中长期：Research、Knowledge 与 Automation
-
-- 已完成结构化 CVE/0day 研究项目、基础元数据、根因与复现模板。
-- 下一步扩展 PoC、补丁和报告自动化。
-- Framework、Binder、权限、SELinux 和内存安全知识分类。
-- 可审计、显式启用的研究自动化工作流。
-
-## 长期：质量与发布
-
-- Shell 格式化、静态检查和 CI。
-- Workspace 路径保护、模板生成及核心 CLI 回归测试。
-- 版本、变更日志和 Ubuntu 24.04 发布验证流程。
+- 根据实际研究需求补充 Research 模板或小型辅助命令。
+- 定期验证 Ubuntu、Go、Repo、ADB 和 DroidForge 兼容性。
+- 在准备正式发布时补充 CHANGELOG、版本策略和发布验收清单。

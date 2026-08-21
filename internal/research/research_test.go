@@ -1,8 +1,6 @@
 package research
 
 import (
-	"crypto/sha256"
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -32,33 +30,11 @@ func createCase(t *testing.T, root, id string) {
 	}
 }
 
-func evidenceBundle(t *testing.T, root, id string) string {
-	t.Helper()
-	dir := filepath.Join(root, "output", "evidence", "android-15", id, "20260821T120000Z")
-	if err := os.MkdirAll(dir, 0o755); err != nil {
-		t.Fatal(err)
-	}
-	deviceData := []byte("{\"serial\":\"emulator-5554\"}\n")
-	manifestData := []byte(fmt.Sprintf("{\"schema_version\":1,\"operation\":\"bundle\",\"workspace\":\"android-15\",\"case_id\":%q,\"serial\":\"emulator-5554\",\"collected_at\":\"2026-08-21T12:00:00Z\",\"status\":\"success\"}\n", id))
-	if err := os.WriteFile(filepath.Join(dir, "device.json"), deviceData, 0o644); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.WriteFile(filepath.Join(dir, "manifest.json"), manifestData, 0o644); err != nil {
-		t.Fatal(err)
-	}
-	deviceSum, manifestSum := sha256.Sum256(deviceData), sha256.Sum256(manifestData)
-	checksums := fmt.Sprintf("%x  device.json\n%x  manifest.json\n", deviceSum, manifestSum)
-	if err := os.WriteFile(filepath.Join(dir, "SHA256SUMS"), []byte(checksums), 0o644); err != nil {
-		t.Fatal(err)
-	}
-	return dir
-}
-
 func TestNewListShowAndValidate(t *testing.T) {
 	root := researchFixture(t)
 	createCase(t, root, "CVE-2026-0001")
 	dir := filepath.Join(root, "research", "CVE-2026-0001")
-	for _, name := range []string{"case.yaml", "README.md", "timeline.md", "reproduction.md", "root-cause.md", "patches", "poc", "artifacts", "reports"} {
+	for _, name := range []string{"case.yaml", "README.md", "timeline.md", "reproduction.md", "root-cause.md", "patches", "poc", "reports"} {
 		if _, err := os.Stat(filepath.Join(dir, name)); err != nil {
 			t.Fatalf("missing %s: %v", name, err)
 		}
@@ -87,49 +63,6 @@ func TestNewRejectsUnsafeAndDuplicateCases(t *testing.T) {
 	stderr.Reset()
 	if code := Run(root, []string{"new", "case-1", "--title", "duplicate"}, &stdout, &stderr); code != 1 {
 		t.Fatalf("duplicate code=%d stderr=%s", code, stderr.String())
-	}
-}
-
-func TestEvidenceAddListVerifyAndTamperDetection(t *testing.T) {
-	root := researchFixture(t)
-	createCase(t, root, "case-1")
-	bundle := evidenceBundle(t, root, "case-1")
-	var stdout, stderr strings.Builder
-	if code := Run(root, []string{"evidence", "add", "case-1", "--bundle", bundle}, &stdout, &stderr); code != 0 {
-		t.Fatalf("add code=%d stderr=%s", code, stderr.String())
-	}
-	stdout.Reset()
-	if code := Run(root, []string{"evidence", "list", "case-1"}, &stdout, &stderr); code != 0 || !strings.Contains(stdout.String(), "emulator-5554") {
-		t.Fatalf("list code=%d stdout=%s stderr=%s", code, stdout.String(), stderr.String())
-	}
-	stdout.Reset()
-	if code := Run(root, []string{"evidence", "verify", "case-1"}, &stdout, &stderr); code != 0 {
-		t.Fatalf("verify code=%d stderr=%s", code, stderr.String())
-	}
-	if err := os.WriteFile(filepath.Join(bundle, "device.json"), []byte("tampered\n"), 0o644); err != nil {
-		t.Fatal(err)
-	}
-	stderr.Reset()
-	if code := Run(root, []string{"evidence", "verify", "case-1"}, &stdout, &stderr); code != 1 || !strings.Contains(stderr.String(), "SHA-256 mismatch") {
-		t.Fatalf("tamper code=%d stderr=%s", code, stderr.String())
-	}
-}
-
-func TestEvidenceRejectsMismatchedCaseAndUnsafeChecksumPath(t *testing.T) {
-	root := researchFixture(t)
-	createCase(t, root, "case-1")
-	mismatch := evidenceBundle(t, root, "case-2")
-	var stdout, stderr strings.Builder
-	if code := Run(root, []string{"evidence", "add", "case-1", "--bundle", mismatch}, &stdout, &stderr); code != 1 || !strings.Contains(stderr.String(), "does not match") {
-		t.Fatalf("mismatch code=%d stderr=%s", code, stderr.String())
-	}
-	bundle := evidenceBundle(t, root, "case-1")
-	if err := os.WriteFile(filepath.Join(bundle, "SHA256SUMS"), []byte(strings.Repeat("0", 64)+"  ../outside\n"), 0o644); err != nil {
-		t.Fatal(err)
-	}
-	stderr.Reset()
-	if code := Run(root, []string{"evidence", "add", "case-1", "--bundle", bundle}, &stdout, &stderr); code != 1 || !strings.Contains(stderr.String(), "unsafe") {
-		t.Fatalf("unsafe checksum code=%d stderr=%s", code, stderr.String())
 	}
 }
 

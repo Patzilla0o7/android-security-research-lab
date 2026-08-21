@@ -67,11 +67,6 @@ func ADBOutput(ctx context.Context, args ...string) (string, error) {
 	return adbRunner{}.Output(ctx, args...)
 }
 
-// ADBBytes executes ADB without text conversion or trimming for binary evidence.
-func ADBBytes(ctx context.Context, args ...string) ([]byte, error) {
-	return adbRunner{}.raw(ctx, args...)
-}
-
 func run(args []string, stdout, stderr io.Writer, adb runner) int {
 	command := "list"
 	if len(args) > 0 {

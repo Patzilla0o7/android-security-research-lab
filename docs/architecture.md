@@ -23,7 +23,6 @@ tools/DroidForge (Git submodule)
 | `bin/lab` | Go 编译产物，不受 Git 管理 |
 | `cmd/lab` | Go 程序入口 |
 | `internal/` | CLI、配置、安全、工具链与领域工作流 |
-| `internal/evidence` | Collect 与 Research 共用的 bundle 检查和完整性验证 |
 | `scripts/build-go.sh` | 构建本机 Go CLI |
 | `scripts/bootstrap-apt.sh` | 最小 apt 特权适配器 |
 | `scripts/aosp-build.sh` | AOSP envsetup、lunch 和 m 的最小 Shell 适配器 |
@@ -42,6 +41,5 @@ tools/DroidForge (Git submodule)
 
 - 长期资产：`research/` 以及未来的 `knowledge/`、`automation/`。
 - 本机状态：`config/workspaces/*.conf`、`.local/active-workspace`。
-- 可清理资产：构建日志、logcat、bugreport、截图和 tombstone。
-- 证据索引：`output/evidence/<workspace>/<case>/<timestamp>/` 下的 manifest 与 SHA-256。
+- 可清理资产：构建日志、Repo 日志和 Patch bundle。
 - 可重建资产：AOSP 源码工作区、构建产物和 `bin/lab`。

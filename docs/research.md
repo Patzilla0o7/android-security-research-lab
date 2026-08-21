@@ -1,7 +1,7 @@
 # Research 项目
 
 `lab research` 管理长期漏洞研究资产。一个 case 对应 `research/<case-id>/` 下的一个
-独立项目；大型原始证据仍保存在 `output/evidence/` 或外部受控存储中。
+独立项目。
 
 ## 创建项目
 
@@ -25,8 +25,6 @@ research/<case-id>/
 ├── root-cause.md
 ├── patches/
 ├── poc/
-├── artifacts/
-│   └── evidence.json
 └── reports/
 ```
 
@@ -42,21 +40,5 @@ research/<case-id>/
 ./bin/lab research validate CVE-2026-0001
 ```
 
-`validate` 检查 case schema、必需模板和目录，并验证所有已关联证据。
-
-## 关联证据
-
-```bash
-./bin/lab research evidence add CVE-2026-0001 \
-  --bundle output/evidence/android-15/CVE-2026-0001/20260821T120000Z
-
-./bin/lab research evidence list CVE-2026-0001
-./bin/lab research evidence verify CVE-2026-0001
-```
-
-添加前会验证 bundle 中的 `SHA256SUMS`、拒绝路径穿越和符号链接，并要求 evidence
-manifest 的 case ID 与 Research 项目一致。索引只保存 bundle 路径、设备、
-Workspace、状态、采集时间和 manifest SHA-256，不复制 bugreport 等大型文件。
-
-`verify` 会重新校验所有文件和 manifest 摘要；任何证据被修改、删除或替换都会返回
-非零状态。移动外部证据后，需要在确认新位置和完整性后重新建立关联。
+`validate` 检查 case schema、必需模板和目录。Patch、PoC、复现记录和报告直接由
+研究人员维护在对应项目目录中。

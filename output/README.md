@@ -2,30 +2,8 @@
 
 Output 保存运行过程中产生的数据。
 
-例如：
-
-Build Log
-
-logcat
-
-Bugreport
-
-Screenshot
-
-Tombstone
+例如 Build Log、Repo Log 和导出的 Patch bundle。
 
 Output 不属于长期资产。
 
-可以随时清理。
-
-设备证据统一保存到：
-
-```text
-output/evidence/<workspace>/<case-id>/<UTC timestamp>/
-```
-
-每个目录包含 `manifest.json` 和 `SHA256SUMS`。清理或归档前应确认 case ID、设备
-serial、采集状态和校验值；重要证据应转移到受控的长期存储。
-
-归档前可运行 `lab collect verify <bundle>` 和 `lab collect redact <bundle> --plan`，
-分别检查完整性与潜在敏感信息。
+可以随时清理。重要研究成果应保存到对应的 `research/<case-id>/`。

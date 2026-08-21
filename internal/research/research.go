@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Patzilla0o7/android-security-research-lab/internal/evidence"
 	"github.com/Patzilla0o7/android-security-research-lab/internal/workspaces"
 )
 
@@ -29,8 +28,6 @@ func Run(root string, args []string, stdout, stderr io.Writer) int {
 		return showCommand(root, args, stdout, stderr)
 	case "validate":
 		return validateCommand(root, args, stdout, stderr)
-	case "evidence":
-		return evidenceCommand(root, args, stdout, stderr)
 	default:
 		return usageError(stderr, "unknown research subcommand: "+command)
 	}
@@ -44,9 +41,6 @@ Commands:
     list
     show <case-id>
     validate <case-id>
-    evidence add <case-id> --bundle <directory>
-    evidence list <case-id>
-    evidence verify <case-id>
 `)
 }
 
@@ -89,7 +83,7 @@ func newCommand(root string, args []string, stdout, stderr io.Writer) int {
 	} else if err != nil {
 		return fail(stderr, err)
 	}
-	for _, name := range []string{"patches", "poc", "artifacts", "reports"} {
+	for _, name := range []string{"patches", "poc", "reports"} {
 		if err := os.Mkdir(filepath.Join(dir, name), 0o755); err != nil {
 			return fail(stderr, err)
 		}
@@ -109,9 +103,6 @@ func newCommand(root string, args []string, stdout, stderr io.Writer) int {
 		if err := os.WriteFile(filepath.Join(dir, name), []byte(content), 0o644); err != nil {
 			return fail(stderr, err)
 		}
-	}
-	if err := saveEvidence(root, id, evidenceIndex{SchemaVersion: 1, Evidence: []evidenceRecord{}}); err != nil {
-		return fail(stderr, err)
 	}
 	fmt.Fprintf(stdout, "[ OK ] Research case created: %s\nDirectory: %s\n", id, dir)
 	return 0
@@ -144,11 +135,7 @@ func showCommand(root string, args []string, stdout, stderr io.Writer) int {
 	if err != nil {
 		return fail(stderr, err)
 	}
-	index, err := loadEvidence(root, args[0])
-	if err != nil {
-		return fail(stderr, err)
-	}
-	fmt.Fprintf(stdout, "Case ID        : %s\nTitle          : %s\nStatus         : %s\nWorkspace      : %s\nComponent      : %s\nDisclosure     : %s\nCreated        : %s\nUpdated        : %s\nEvidence       : %d bundle(s)\n", c.CaseID, c.Title, c.Status, c.Workspace, valueOr(c.AffectedComponent, "unspecified"), valueOr(c.DisclosureStatus, "unspecified"), c.CreatedAt, c.UpdatedAt, len(index.Evidence))
+	fmt.Fprintf(stdout, "Case ID        : %s\nTitle          : %s\nStatus         : %s\nWorkspace      : %s\nComponent      : %s\nDisclosure     : %s\nCreated        : %s\nUpdated        : %s\n", c.CaseID, c.Title, c.Status, c.Workspace, valueOr(c.AffectedComponent, "unspecified"), valueOr(c.DisclosureStatus, "unspecified"), c.CreatedAt, c.UpdatedAt)
 	return 0
 }
 
@@ -164,101 +151,19 @@ func validateCommand(root string, args []string, stdout, stderr io.Writer) int {
 	if _, err := loadCase(root, id); err != nil {
 		return fail(stderr, err)
 	}
-	for _, name := range []string{"README.md", "timeline.md", "reproduction.md", "root-cause.md", filepath.Join("artifacts", "evidence.json")} {
+	for _, name := range []string{"README.md", "timeline.md", "reproduction.md", "root-cause.md"} {
 		info, err := os.Stat(filepath.Join(dir, name))
 		if err != nil || !info.Mode().IsRegular() {
 			return fail(stderr, fmt.Errorf("required research asset missing: %s", name))
 		}
 	}
-	for _, name := range []string{"patches", "poc", "artifacts", "reports"} {
+	for _, name := range []string{"patches", "poc", "reports"} {
 		info, err := os.Stat(filepath.Join(dir, name))
 		if err != nil || !info.IsDir() {
 			return fail(stderr, fmt.Errorf("required research directory missing: %s", name))
 		}
 	}
-	if code := verifyEvidence(root, id, io.Discard, stderr); code != 0 {
-		return code
-	}
 	fmt.Fprintf(stdout, "[ OK ] Research case is valid: %s\n", id)
-	return 0
-}
-
-func evidenceCommand(root string, args []string, stdout, stderr io.Writer) int {
-	if len(args) < 2 {
-		return usageError(stderr, "evidence requires add, list or verify and a case ID")
-	}
-	command, id, args := args[0], args[1], args[2:]
-	if _, err := loadCase(root, id); err != nil {
-		return fail(stderr, err)
-	}
-	switch command {
-	case "add":
-		if len(args) != 2 || args[0] != "--bundle" {
-			return usageError(stderr, "evidence add requires --bundle <directory>")
-		}
-		record, err := inspectBundle(root, id, args[1])
-		if err != nil {
-			return fail(stderr, err)
-		}
-		index, err := loadEvidence(root, id)
-		if err != nil {
-			return fail(stderr, err)
-		}
-		for _, existing := range index.Evidence {
-			if existing.Bundle == record.Bundle {
-				return fail(stderr, fmt.Errorf("evidence bundle is already linked: %s", record.Bundle))
-			}
-		}
-		index.Evidence = append(index.Evidence, record)
-		if err := saveEvidence(root, id, index); err != nil {
-			return fail(stderr, err)
-		}
-		fmt.Fprintf(stdout, "[ OK ] Evidence linked: %s\n", record.Bundle)
-		return 0
-	case "list":
-		if len(args) != 0 {
-			return usageError(stderr, "evidence list accepts no options")
-		}
-		index, err := loadEvidence(root, id)
-		if err != nil {
-			return fail(stderr, err)
-		}
-		if len(index.Evidence) == 0 {
-			fmt.Fprintln(stdout, "No evidence bundles linked.")
-		}
-		for _, record := range index.Evidence {
-			fmt.Fprintf(stdout, "%s\t%s\t%s\t%s\n", record.Status, record.Workspace, record.Serial, record.Bundle)
-		}
-		return 0
-	case "verify":
-		if len(args) != 0 {
-			return usageError(stderr, "evidence verify accepts no options")
-		}
-		return verifyEvidence(root, id, stdout, stderr)
-	default:
-		return usageError(stderr, "unknown evidence subcommand: "+command)
-	}
-}
-
-func verifyEvidence(root, id string, stdout, stderr io.Writer) int {
-	index, err := loadEvidence(root, id)
-	if err != nil {
-		return fail(stderr, err)
-	}
-	for _, record := range index.Evidence {
-		bundle := resolveBundle(root, record.Bundle)
-		if _, err := evidence.Verify(bundle); err != nil {
-			return fail(stderr, fmt.Errorf("verify %s: %w", record.Bundle, err))
-		}
-		sum, err := evidence.ManifestDigest(bundle)
-		if err != nil {
-			return fail(stderr, err)
-		}
-		if sum != record.ManifestSHA256 {
-			return fail(stderr, fmt.Errorf("manifest digest changed: %s", record.Bundle))
-		}
-	}
-	fmt.Fprintf(stdout, "[ OK ] Verified %d evidence bundle(s)\n", len(index.Evidence))
 	return 0
 }
 

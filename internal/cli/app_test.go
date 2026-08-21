@@ -45,24 +45,6 @@ func TestDeviceHelp(t *testing.T) {
 	}
 }
 
-func TestCollectHelp(t *testing.T) {
-	root := t.TempDir()
-	if err := os.WriteFile(filepath.Join(root, "VERSION"), []byte("test\n"), 0o600); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.Mkdir(filepath.Join(root, "config"), 0o700); err != nil {
-		t.Fatal(err)
-	}
-	t.Setenv("ASRL_ROOT", root)
-	var stdout, stderr bytes.Buffer
-	if code := Run([]string{"collect", "--help"}, &stdout, &stderr); code != exitSuccess {
-		t.Fatalf("code = %d; stderr=%s", code, stderr.String())
-	}
-	if !strings.Contains(stdout.String(), "lab collect") {
-		t.Fatalf("unexpected help: %s", stdout.String())
-	}
-}
-
 func TestResearchHelp(t *testing.T) {
 	root := t.TempDir()
 	if err := os.WriteFile(filepath.Join(root, "VERSION"), []byte("test\n"), 0o600); err != nil {

@@ -12,7 +12,6 @@ LAB="${TEST_ROOT}/bin/lab"
 "${LAB}" repo --help | grep -q "Usage: lab repo"
 "$LAB" build --help | grep -q "Usage: lab build"
 "$LAB" device --help | grep -q "Usage: lab device"
-"$LAB" collect --help | grep -q "Usage: lab collect"
 "$LAB" research --help | grep -q "Usage: lab research"
 
 set +e

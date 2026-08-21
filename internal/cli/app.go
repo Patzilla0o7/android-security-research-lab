@@ -9,7 +9,6 @@ import (
 
 	"github.com/Patzilla0o7/android-security-research-lab/internal/bootstrap"
 	buildcommand "github.com/Patzilla0o7/android-security-research-lab/internal/build"
-	collectcommand "github.com/Patzilla0o7/android-security-research-lab/internal/collect"
 	"github.com/Patzilla0o7/android-security-research-lab/internal/device"
 	"github.com/Patzilla0o7/android-security-research-lab/internal/doctor"
 	repocommand "github.com/Patzilla0o7/android-security-research-lab/internal/repo"
@@ -90,13 +89,6 @@ func Run(args []string, stdout, stderr io.Writer) int {
 		return buildcommand.Run(root, commandArgs, stdout, stderr)
 	case "device":
 		return device.Run(commandArgs, stdout, stderr)
-	case "collect":
-		root, err := projectRoot()
-		if err != nil {
-			fmt.Fprintf(stderr, "[FAIL] %v\n", err)
-			return exitFailure
-		}
-		return collectcommand.Run(root, commandArgs, stdout, stderr)
 	case "research":
 		root, err := projectRoot()
 		if err != nil {
@@ -132,7 +124,6 @@ Commands
     repo
     build
     device
-    collect
     research
 
 Run 'lab <command> --help' for command-specific usage where available.
