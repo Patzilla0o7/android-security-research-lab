@@ -13,19 +13,15 @@ import (
 	"github.com/Patzilla0o7/android-security-research-lab/internal/device"
 	"github.com/Patzilla0o7/android-security-research-lab/internal/doctor"
 	repocommand "github.com/Patzilla0o7/android-security-research-lab/internal/repo"
+	researchcommand "github.com/Patzilla0o7/android-security-research-lab/internal/research"
 	"github.com/Patzilla0o7/android-security-research-lab/internal/workspaces"
 )
 
 const (
-	exitSuccess        = 0
-	exitFailure        = 1
-	exitUsage          = 2
-	exitNotImplemented = 3
+	exitSuccess = 0
+	exitFailure = 1
+	exitUsage   = 2
 )
-
-var placeholderCommands = map[string]string{
-	"research": "Research",
-}
 
 // Run executes the ASRL command line and returns its process exit code.
 func Run(args []string, stdout, stderr io.Writer) int {
@@ -101,11 +97,14 @@ func Run(args []string, stdout, stderr io.Writer) int {
 			return exitFailure
 		}
 		return collectcommand.Run(root, commandArgs, stdout, stderr)
-	default:
-		if label, ok := placeholderCommands[command]; ok {
-			fmt.Fprintf(stdout, "[INFO] %s module is not implemented.\n", label)
-			return exitNotImplemented
+	case "research":
+		root, err := projectRoot()
+		if err != nil {
+			fmt.Fprintf(stderr, "[FAIL] %v\n", err)
+			return exitFailure
 		}
+		return researchcommand.Run(root, commandArgs, stdout, stderr)
+	default:
 		fmt.Fprintf(stderr, "[FAIL] Unknown command: %s\n\n", command)
 		printHelp(stderr)
 		return exitUsage

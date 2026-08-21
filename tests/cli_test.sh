@@ -13,17 +13,12 @@ LAB="${TEST_ROOT}/bin/lab"
 "$LAB" build --help | grep -q "Usage: lab build"
 "$LAB" device --help | grep -q "Usage: lab device"
 "$LAB" collect --help | grep -q "Usage: lab collect"
+"$LAB" research --help | grep -q "Usage: lab research"
 
 set +e
 "${LAB}" unknown-command >/dev/null 2>&1
 status=$?
 set -e
 [[ "${status}" -eq 2 ]]
-
-set +e
-"$LAB" research >/dev/null 2>&1
-status=$?
-set -e
-[[ "${status}" -eq 3 ]]
 
 echo "cli_test: passed"

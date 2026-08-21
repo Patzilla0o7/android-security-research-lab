@@ -34,21 +34,15 @@
 | `lab collect bugreport` | 生成 bugreport ZIP |
 | `lab collect tombstones` | 将可读取的 tombstone 打包为 TAR |
 | `lab collect bundle` | 尝试所有采集项并生成 manifest 和 SHA-256 bundle |
+| `lab research new|list|show|validate` | 创建、查看并校验结构化研究项目 |
+| `lab research evidence add|list|verify` | 关联和验证 Collect 证据 bundle |
 
 `lab --help` 和 `lab --version` 分别等价于 `lab help` 和 `lab version`。
-
-## 已预留命令
-
-以下命令已注册，但目前只会报告模块尚未实现：
-
-| 命令 | 计划职责 |
-|---|---|
-| `lab research` | CVE/0day 项目创建和研究资产管理 |
 
 ## 执行约定
 
 - 未知命令会打印帮助并以非零状态退出。
-- 参数错误使用退出码 `2`；尚未实现的占位命令使用退出码 `3`。
+- 参数错误使用退出码 `2`。
 - `bootstrap plan` 为只读操作。
 - `bootstrap --apply` 会执行 `sudo apt-get update` 和 `sudo apt-get install`，因此必须显式指定。
 - 所有命令应在 Ubuntu 24.04 中运行，而不是 macOS 编辑主机。

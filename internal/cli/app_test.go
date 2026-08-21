@@ -28,13 +28,6 @@ func TestUnknownCommand(t *testing.T) {
 	}
 }
 
-func TestPlaceholder(t *testing.T) {
-	var stdout, stderr bytes.Buffer
-	if code := Run([]string{"research"}, &stdout, &stderr); code != exitNotImplemented {
-		t.Fatalf("Run() code = %d, want %d", code, exitNotImplemented)
-	}
-}
-
 func TestDoctorRejectsUnknownOptions(t *testing.T) {
 	var stdout, stderr bytes.Buffer
 	if code := Run([]string{"doctor", "--unknown"}, &stdout, &stderr); code != exitUsage {
@@ -66,6 +59,24 @@ func TestCollectHelp(t *testing.T) {
 		t.Fatalf("code = %d; stderr=%s", code, stderr.String())
 	}
 	if !strings.Contains(stdout.String(), "lab collect") {
+		t.Fatalf("unexpected help: %s", stdout.String())
+	}
+}
+
+func TestResearchHelp(t *testing.T) {
+	root := t.TempDir()
+	if err := os.WriteFile(filepath.Join(root, "VERSION"), []byte("test\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Mkdir(filepath.Join(root, "config"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("ASRL_ROOT", root)
+	var stdout, stderr bytes.Buffer
+	if code := Run([]string{"research", "--help"}, &stdout, &stderr); code != exitSuccess {
+		t.Fatalf("code = %d; stderr=%s", code, stderr.String())
+	}
+	if !strings.Contains(stdout.String(), "lab research") {
 		t.Fatalf("unexpected help: %s", stdout.String())
 	}
 }

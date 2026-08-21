@@ -14,7 +14,6 @@
 | [build.md](build.md) | AOSP 构建计划、执行、模块构建、日志与状态 |
 | [device.md](device.md) | ADB 设备发现、状态读取、多设备保护与启动等待 |
 | [collect.md](collect.md) | 设备信息、logcat、证据 bundle 与完整性校验 |
+| [research.md](research.md) | Research 项目模板、元数据和证据关联 |
 | [testing.md](testing.md) | 测试入口与验证范围 |
 | [roadmap.md](roadmap.md) | 当前完成度与后续开发顺序 |
-
-尚未实现的 Research 工作流将在对应服务落地后补充文档。
