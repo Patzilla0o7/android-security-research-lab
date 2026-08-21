@@ -39,7 +39,7 @@ func evidenceBundle(t *testing.T, root, id string) string {
 		t.Fatal(err)
 	}
 	deviceData := []byte("{\"serial\":\"emulator-5554\"}\n")
-	manifestData := []byte(fmt.Sprintf("{\"workspace\":\"android-15\",\"case_id\":%q,\"serial\":\"emulator-5554\",\"collected_at\":\"2026-08-21T12:00:00Z\",\"status\":\"success\"}\n", id))
+	manifestData := []byte(fmt.Sprintf("{\"schema_version\":1,\"operation\":\"bundle\",\"workspace\":\"android-15\",\"case_id\":%q,\"serial\":\"emulator-5554\",\"collected_at\":\"2026-08-21T12:00:00Z\",\"status\":\"success\"}\n", id))
 	if err := os.WriteFile(filepath.Join(dir, "device.json"), deviceData, 0o644); err != nil {
 		t.Fatal(err)
 	}

@@ -1,7 +1,6 @@
 package research
 
 import (
-	"crypto/sha256"
 	"fmt"
 	"io"
 	"os"
@@ -9,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Patzilla0o7/android-security-research-lab/internal/evidence"
 	"github.com/Patzilla0o7/android-security-research-lab/internal/workspaces"
 )
 
@@ -247,14 +247,13 @@ func verifyEvidence(root, id string, stdout, stderr io.Writer) int {
 	}
 	for _, record := range index.Evidence {
 		bundle := resolveBundle(root, record.Bundle)
-		if err := verifyBundle(bundle); err != nil {
+		if _, err := evidence.Verify(bundle); err != nil {
 			return fail(stderr, fmt.Errorf("verify %s: %w", record.Bundle, err))
 		}
-		data, err := os.ReadFile(filepath.Join(bundle, "manifest.json"))
+		sum, err := evidence.ManifestDigest(bundle)
 		if err != nil {
 			return fail(stderr, err)
 		}
-		sum := fmt.Sprintf("%x", sha256Sum(data))
 		if sum != record.ManifestSHA256 {
 			return fail(stderr, fmt.Errorf("manifest digest changed: %s", record.Bundle))
 		}
@@ -263,7 +262,6 @@ func verifyEvidence(root, id string, stdout, stderr io.Writer) int {
 	return 0
 }
 
-func sha256Sum(data []byte) [32]byte { return sha256.Sum256(data) }
 func valueOr(value, fallback string) string {
 	if value == "" {
 		return fallback

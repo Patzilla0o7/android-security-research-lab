@@ -34,6 +34,8 @@
 | `lab collect bugreport` | 生成 bugreport ZIP |
 | `lab collect tombstones` | 将可读取的 tombstone 打包为 TAR |
 | `lab collect bundle` | 尝试所有采集项并生成 manifest 和 SHA-256 bundle |
+| `lab collect inspect|verify` | 检查 bundle 内容并执行严格完整性验证 |
+| `lab collect redact <bundle> --plan` | 只读扫描敏感文本并生成脱敏计划 |
 | `lab research new|list|show|validate` | 创建、查看并校验结构化研究项目 |
 | `lab research evidence add|list|verify` | 关联和验证 Collect 证据 bundle |
 

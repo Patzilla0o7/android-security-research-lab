@@ -76,6 +76,9 @@ func run(root string, args []string, stdout, stderr io.Writer, deps dependencies
 		return 0
 	}
 	operation, args := args[0], args[1:]
+	if operation == "inspect" || operation == "verify" || operation == "redact" {
+		return governanceCommand(operation, args, stdout, stderr)
+	}
 	if operation != "device-info" && operation != "logcat" && operation != "screenshot" && operation != "bugreport" && operation != "tombstones" && operation != "bundle" {
 		return usageError(stderr, "unknown collect subcommand: "+operation)
 	}
@@ -176,6 +179,9 @@ Commands:
     bugreport
     tombstones
     bundle
+    inspect <bundle>
+    verify <bundle>
+    redact <bundle> --plan
 
 Options:
     --case <case-id>      Research case identifier (required).

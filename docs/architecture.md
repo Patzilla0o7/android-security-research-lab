@@ -23,6 +23,7 @@ tools/DroidForge (Git submodule)
 | `bin/lab` | Go 编译产物，不受 Git 管理 |
 | `cmd/lab` | Go 程序入口 |
 | `internal/` | CLI、配置、安全、工具链与领域工作流 |
+| `internal/evidence` | Collect 与 Research 共用的 bundle 检查和完整性验证 |
 | `scripts/build-go.sh` | 构建本机 Go CLI |
 | `scripts/bootstrap-apt.sh` | 最小 apt 特权适配器 |
 | `scripts/aosp-build.sh` | AOSP envsetup、lunch 和 m 的最小 Shell 适配器 |

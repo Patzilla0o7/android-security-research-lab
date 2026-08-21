@@ -26,3 +26,6 @@ output/evidence/<workspace>/<case-id>/<UTC timestamp>/
 
 每个目录包含 `manifest.json` 和 `SHA256SUMS`。清理或归档前应确认 case ID、设备
 serial、采集状态和校验值；重要证据应转移到受控的长期存储。
+
+归档前可运行 `lab collect verify <bundle>` 和 `lab collect redact <bundle> --plan`，
+分别检查完整性与潜在敏感信息。

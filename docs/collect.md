@@ -43,3 +43,33 @@ ADB 参数、成功/失败状态以及每个证据文件的大小和 SHA-256。`
 
 证据目录属于可清理的 `output/`，重要材料应在确认隐私和敏感信息后归档到对应的
 Research 项目或外部证据存储。
+
+## 检查与验证
+
+```bash
+./bin/lab collect inspect output/evidence/android-15/case-1/20260821T120000Z
+./bin/lab collect verify output/evidence/android-15/case-1/20260821T120000Z
+```
+
+`inspect` 显示 manifest 摘要、文件、大小、采集状态，并执行完整性验证。`verify`
+执行同样的严格验证，适合脚本和 CI。验证会拒绝：
+
+- SHA-256 不匹配、缺失或重复条目；
+- 未被 `SHA256SUMS` 覆盖的额外文件；
+- 未覆盖 `manifest.json` 的 bundle；
+- 路径穿越、符号链接和其他非普通文件；
+- 不支持的 manifest schema。
+
+## 脱敏计划
+
+```bash
+./bin/lab collect redact <bundle> --plan
+```
+
+计划模式要求 bundle 先通过完整性验证，只读扫描文本、ZIP 和 TAR 内容。当前规则
+覆盖邮箱、IPv4、MAC、电话号码、常见 credential 字段、Android 标识符、Wi-Fi
+标识符和用户路径。输出只包含文件位置、规则名称和命中数量，不显示原始敏感值。
+
+PNG 等图像会标记为人工检查。单个文本或归档条目最多扫描 16 MiB，较大的条目会
+跳过，避免异常证据造成过量内存消耗。`--plan` 不修改任何文件；生成独立脱敏副本的
+`--apply` 尚未实现。

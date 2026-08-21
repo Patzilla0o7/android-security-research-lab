@@ -13,6 +13,7 @@ ASRL 是面向 Android Framework、安全研究与漏洞分析的长期实验平
 - Go 单元测试与 CLI 二进制冒烟测试
 - ADB 设备发现、状态读取与启动完成等待
 - 设备信息、logcat、截图、bugreport、tombstones 与带 SHA-256 的证据 bundle
+- 证据 bundle 检查、严格完整性验证与只读脱敏计划
 - 以 Git submodule 集成 DroidForge 模拟设备工具链
 
 多 Workspace、Repo `status|init|sync|branch|patch`、AOSP Build、设备证据采集和 Research 项目管理均已实现。
@@ -61,6 +62,7 @@ cmd/lab + internal/*
 ./bin/lab bootstrap plan
 ./bin/lab device list
 ./bin/lab collect bundle --case case-001
+./bin/lab collect redact output/evidence/<workspace>/case-001/<timestamp> --plan
 ./bin/lab research new case-001 --title "Research case"
 ```
 
